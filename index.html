@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>等等Bar之風味煉金術師 - 創意飲品/調酒生成器</title>
+    <!-- 載入 Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+TC:wght@400;700;900&display=swap');
+        
+        /* 華麗深色主題 */
+        body {
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+            background-color: #0d1117; /* GitHub Dark Theme Background */
+            color: #c9d1d9; /* Light text */
+        }
+        .card {
+            background-color: #161b22; /* Slightly lighter card background */
+            border-radius: 1.5rem; /* 更圓潤 */
+            box-shadow: 0 0 40px rgba(79, 70, 229, 0.3); /* 帶有靛藍色光暈 */
+            transition: transform 0.3s ease;
+            border: 1px solid #30363d;
+        }
+        /* 輸入欄位通用樣式 */
+        .input-style {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            border-radius: 0.75rem;
+            padding: 0.85rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-style:focus {
+            border-color: #6366f1; /* 靛藍色 */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.4);
+        }
+        /* 主要按鈕 - 金色/黃色漸變 */
+        .btn-primary {
+            background-image: linear-gradient(135deg, #facc15, #eab308); /* 金色漸變 */
+            color: #1f2937;
+            padding: 0.9rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            transition: opacity 0.3s, transform 0.1s;
+            box-shadow: 0 5px 15px rgba(234, 179, 8, 0.4);
+        }
+        .btn-primary:hover:not(:disabled) {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .btn-primary:disabled {
+            background-image: linear-gradient(135deg, #9ca3af, #6b7280);
+        }
+
+        /* 結果區塊樣式 */
+        .result-section {
+            border-top: 3px solid #30363d;
+            padding-top: 2.5rem;
+        }
+        .recipe-output-box {
+            background-color: #1e2531;
+            border: 1px solid #30363d;
+        }
+        .custom-component-box {
+            background-color: #283040;
+            border: 1px solid #4a5568;
+        }
+        /* 標題金色強調 */
+        .text-accent-gold {
+            color: #facc15;
+        }
+        .text-accent-indigo {
+             color: #6366f1;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-12">
+
+    <div id="app" class="max-w-4xl mx-auto card p-6 md:p-12">
+
+        <h1 class="text-4xl font-black text-accent-gold mb-2 flex items-center">
+            <svg class="w-10 h-10 mr-4 text-accent-indigo" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            等等Bar之風味煉金術師 ⚗️
+        </h1>
+        <p class="text-gray-400 mb-8 border-b border-gray-700 pb-4 text-lg italic">從清爽咖啡到華麗雞尾酒，AI 助您創造無與倫比的感官體驗。</p>
+
+        <!-- API Key 輸入區塊 -->
+        <div class="mb-8 p-4 bg-yellow-900 bg-opacity-30 border border-yellow-700 rounded-lg">
+            <label for="apiKeyInput" class="block text-lg font-medium text-yellow-300 mb-2">
+                Gemini API Key
+                <span class="text-xs text-red-400 ml-2 font-normal"> (不會儲存於瀏覽器)</span>
+            </label>
+            <input type="password" id="apiKeyInput" placeholder="在此輸入您的 Gemini API Key" class="w-full input-style text-lg">
+        </div>
+
+        <!-- 輸入區塊 -->
+        <div class="space-y-6 mb-8">
+            <div>
+                <label for="mainIngredient" class="block text-lg font-medium text-gray-300 mb-2">主要創意食材 (必填)</label>
+                <input type="text" id="mainIngredient" placeholder="例如：花椰菜、黑蒜、鹹蛋黃、迷迭香..." class="w-full input-style text-lg">
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 基礎飲品類型 -->
+                <div>
+                    <label for="baseDrink" class="block text-lg font-medium text-gray-300 mb-2">飲品基礎類型</label>
+                    <select id="baseDrink" onchange="toggleSpiritSelection(this.value)" class="w-full input-style text-lg cursor-pointer">
+                        <option value="咖啡基底">☕ 咖啡基底 (拿鐵、濃縮)</option>
+                        <option value="茶基底">🍵 茶基底 (紅茶、烏龍茶)</option>
+                        <option value="牛奶或奶製品基底">🥛 牛奶或奶製品基底 (奶蓋、優格)</option>
+                        <option value="氣泡水或果汁基底">🍹 氣泡水或果汁基底 (蘇打、Mocktail)</option>
+                        <option value="酒精類飲品">🍸 酒精類飲品 (Cocktail)</option>
+                    </select>
+                </div>
+                
+                <!-- 基酒選擇 (預設隱藏) -->
+                <div id="spiritSelection" class="hidden">
+                    <label for="baseSpirit" class="block text-lg font-medium text-gray-300 mb-2">選擇基酒</label>
+                    <select id="baseSpirit" class="w-full input-style text-lg cursor-pointer">
+                        <option value="不限定">不限定 (AI 自由選擇)</option>
+                        <option value="Gin">Gin (琴酒)</option>
+                        <option value="Rum">Rum (蘭姆酒)</option>
+                        <option value="Vodka">Vodka (伏特加)</option>
+                        <option value="Tequila">Tequila (龍舌蘭)</option>
+                        <option value="Whisky">Whisky (威士忌)</option>
+                        <option value="Brandy">Brandy (白蘭地)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 生成按鈕 -->
+        <button onclick="generateRecipe()" id="generateButton" class="w-full btn-primary flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <svg id="loadingSpinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-800 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span id="buttonText">激發飲品創意！</span>
+        </button>
+
+        <!-- 酒精警示 -->
+        <div id="alcoholWarning" class="mt-4 text-center text-sm text-yellow-400 bg-red-900 bg-opacity-20 p-2 rounded-lg hidden">
+            <span class="font-bold">🔞 警示：</span> 飲酒過量，有害健康。未滿十八歲請勿飲酒。
+        </div>
+
+        <!-- 輸出區塊 -->
+        <div class="result-section mt-12">
+            <h2 class="text-3xl font-bold text-accent-gold mb-6">🔮 您的風味秘笈</h2>
+            <div id="recipeOutput" class="min-h-32 recipe-output-box p-6 md:p-8 rounded-xl shadow-inner">
+                <p id="defaultMessage" class="text-gray-500 italic">請輸入食材、填入 Key，並選擇基礎類型，然後點擊上方按鈕，AI 將為您生成驚喜配方。</p>
+                <div id="recipeDetails" class="hidden">
+                    <!-- 飲品名稱、描述和詳細步驟將由 JS 動態注入 -->
+                </div>
+            </div>
+            <!-- 錯誤訊息顯示區 -->
+            <div id="errorMessage" class="mt-4 p-3 bg-red-800 border border-red-500 text-red-300 rounded-lg hidden" role="alert"></div>
+        </div>
+    </div>
+
+    <script>
+        // 設定模型與 API 相關常數
+        const MODEL_NAME = 'gemini-2.5-flash-preview-09-2025';
+        const BASE_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`;
+        
+        // --- UI 輔助函數 ---
+
+        /** 根據飲品類型切換基酒選擇的顯示狀態 */
+        function toggleSpiritSelection(baseType) {
+            const spiritSection = document.getElementById('spiritSelection');
+            const warning = document.getElementById('alcoholWarning');
+            
+            if (baseType === '酒精類飲品') {
+                spiritSection.classList.remove('hidden');
+                warning.classList.remove('hidden');
+            } else {
+                spiritSection.classList.add('hidden');
+                warning.classList.add('hidden');
+                document.getElementById('baseSpirit').value = '不限定'; // 重置選項
+            }
+        }
+
+        /** 顯示錯誤訊息 */
+        function displayError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = `❌ 錯誤：${message}`;
+            errorElement.classList.remove('hidden');
+            document.getElementById('recipeDetails').classList.add('hidden');
+            document.getElementById('defaultMessage').classList.add('hidden');
+        }
+
+        /** 設定載入狀態 */
+        function setLoading(isLoading) {
+            const button = document.getElementById('generateButton');
+            const spinner = document.getElementById('loadingSpinner');
+            const buttonText = document.getElementById('buttonText');
+
+            button.disabled = isLoading;
+            if (isLoading) {
+                spinner.classList.remove('hidden');
+                buttonText.textContent = 'AI 正在調製秘笈...';
+            } else {
+                spinner.classList.add('hidden');
+                buttonText.textContent = '激發飲品創意！';
+            }
+        }
+
+        /** 執行帶有指數退避機制的 API 呼叫 */
+        async function retryFetch(url, options, maxRetries = 3) {
+            let error = null;
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    const json = await response.json();
+
+                    if (!response.ok || json.error) {
+                        throw new Error(json.error?.message || `API 響應錯誤: ${response.status}`);
+                    }
+                    return json;
+
+                } catch (e) {
+                    error = e;
+                    if (i < maxRetries - 1) {
+                        const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                }
+            }
+            throw error;
+        }
+
+        /** 主要功能：生成創意飲品配方 */
+        async function generateRecipe() {
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            const mainIngredient = document.getElementById('mainIngredient').value.trim();
+            const baseDrink = document.getElementById('baseDrink').value;
+            const baseSpirit = document.getElementById('baseSpirit').value; // 取得基酒
+            
+            // 檢查 Key 和食材
+            if (!apiKey || apiKey.length < 30) {
+                displayError('請先在上方輸入有效的 Gemini API Key。');
+                return;
+            }
+            if (!mainIngredient) {
+                displayError('請務必輸入一個主要創意食材！');
+                return;
+            }
+
+            // 清除狀態
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('defaultMessage').classList.add('hidden');
+            
+            setLoading(true);
+
+            // 構建 User Query
+            let userQuery = `請使用核心食材：「${mainIngredient}」和飲品類型：「${baseDrink}」，生成一份專業的飲品配方。`;
+            if (baseDrink === '酒精類飲品') {
+                userQuery += `請使用基酒：「${baseSpirit}」。請以調酒（Cocktail）的格式和標準液體測量單位（如 oz 或 ml）來設計配方。`;
+            } else {
+                userQuery += `請以非酒精飲品格式設計。`;
+            }
+
+
+            // 構建 System Instruction (強調配方細節與子步驟)
+            const systemInstruction = `您是世界級的咖啡廳創意飲品/調酒設計師。您的任務是將使用者提供的一個「核心食材」與「基礎類型」結合，創造出一個兼具風味、視覺和市場潛力的獨特配方。
+                
+                **創作原則：**
+                1. 風味必須平衡，必須詳細解釋如何將核心食材融入風味。
+                2. **如果配方包含任何需要預先製作的自製原料 (例如: 濃縮糖漿、浸漬液、風味奶蓋)，您必須在 components 陣列中詳細說明其所需的獨立備料與製作步驟。**
+                3. 如果是調酒，請使用標準調酒測量單位 (例如：oz, ml, dash)。如果是非酒精飲品，份量估算為一杯約 500ml。
+
+                請嚴格依照以下的 JSON 格式輸出，所有欄位都必須存在且填寫內容：
+                {
+                    "drinkName": "獨特且吸引人的飲品名稱",
+                    "description": "簡短的飲品風味描述與賣點",
+                    "components": [
+                        {
+                            "name": "自製成分名稱 (例如：香茅花椰菜糖漿) 或 最終組裝所需材料 (例如：牛奶)",
+                            "ingredients": ["備料清單，請列出精確用量 (例如：30g、20ml、1.5 oz)", "..."],
+                            "preparationSteps": ["製作步驟，每個步驟獨立為一個字串 (若是自製組件，請詳細說明)", "..."]
+                        }
+                    ],
+                    "finalAssemblyInstructions": ["最終組裝步驟 (使用已完成的自製成分與基底飲品)", "..."]
+                }
+            `;
+
+            // 構建 API Payload (使用結構化輸出)
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            "drinkName": { "type": "STRING", "description": "飲品名稱" },
+                            "description": { "type": "STRING", "description": "風味描述" },
+                            "components": {
+                                "type": "ARRAY",
+                                "items": {
+                                    "type": "OBJECT",
+                                    "properties": {
+                                        "name": { "type": "STRING", "description": "自製組件名稱或材料名稱" },
+                                        "ingredients": { "type": "ARRAY", "items": { "type": "STRING" }, "description": "組件所需材料" },
+                                        "preparationSteps": { "type": "ARRAY", "items": { "type": "STRING" }, "description": "組件製作步驟 (若是自製組件)" }
+                                    },
+                                    "required": ["name", "ingredients", "preparationSteps"]
+                                }
+                            },
+                            "finalAssemblyInstructions": { "type": "ARRAY", "items": { "type": "STRING" }, "description": "最終組裝步驟" }
+                        },
+                        "required": ["drinkName", "description", "components", "finalAssemblyInstructions"]
+                    }
+                },
+                systemInstruction: { parts: [{ text: systemInstruction }] }
+            };
+
+            try {
+                // 使用輸入框中的 Key 構建 URL
+                const urlWithKey = `${BASE_API_URL}?key=${apiKey}`;
+                
+                const result = await retryFetch(urlWithKey, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                // 處理並解析 JSON 響應
+                const candidate = result.candidates?.[0];
+                const jsonText = candidate?.content?.parts?.[0]?.text;
+                
+                if (!jsonText) {
+                    throw new Error("API 未返回有效的 JSON 內容。");
+                }
+
+                const recipe = JSON.parse(jsonText);
+                
+                // --- 渲染結果 (華麗新結構) ---
+                
+                let htmlContent = `
+                    <h3 class="text-4xl font-black text-accent-indigo mb-2">${recipe.drinkName || '未命名飲品'}</h3>
+                    <p class="text-gray-400 mb-6 italic border-b border-gray-700 pb-4">${recipe.description || '無描述'}</p>
+                `;
+
+                // 1. 渲染自製組件的步驟
+                if (recipe.components && recipe.components.length > 0) {
+                    
+                    let hasCustomComponent = recipe.components.some(c => c.preparationSteps && c.preparationSteps.length > 0 && c.preparationSteps.some(s => s.trim() !== ''));
+
+                    if(hasCustomComponent) {
+                         htmlContent += `<div class="mb-8">
+                            <h4 class="text-2xl font-bold text-accent-gold mb-4 border-b-2 border-yellow-700 pb-2">🛠️ 預先製作組件 (煉金術步驟)</h4>`;
+                    }
+                   
+                    
+                    recipe.components.forEach((component, index) => {
+                        // 僅顯示有自製步驟的組件
+                        if (component.preparationSteps && component.preparationSteps.length > 0 && component.preparationSteps.some(s => s.trim() !== '')) {
+                             htmlContent += `<div class="custom-component-box p-5 rounded-xl mb-6">
+                                <h5 class="text-xl font-bold text-yellow-300 mb-3 border-b border-yellow-800 pb-2">${index + 1}. ${component.name} 製作</h5>
+                                <p class="font-bold text-base text-gray-400 mb-2">所需材料:</p>
+                                <ul class="list-disc list-outside space-y-1 text-base text-gray-400 ml-6">`;
+                                (component.ingredients || []).forEach(item => {
+                                    htmlContent += `<li>${item}</li>`;
+                                });
+                            htmlContent += `</ul>
+                                <p class="font-bold text-base text-gray-400 mt-4 mb-2">製作步驟:</p>
+                                <ol class="list-decimal list-outside space-y-2 text-base text-gray-400 ml-6">`;
+                                (component.preparationSteps || []).forEach(step => {
+                                    htmlContent += `<li>${step}</li>`;
+                                });
+                            htmlContent += `</ol>
+                            </div>`;
+                        }
+                    });
+
+                    if(hasCustomComponent) {
+                        htmlContent += `</div>`;
+                    }
+                    
+                    // 2. 渲染最終組裝步驟前，統一列出所有材料
+                    htmlContent += `<div class="mb-8">
+                        <h4 class="text-2xl font-bold text-accent-gold mb-4 border-b-2 border-yellow-700 pb-2">📋 總計所需所有材料</h4>
+                        <ul class="list-disc list-outside space-y-1 text-base text-gray-300 ml-6">`;
+                        
+                        recipe.components.forEach(component => {
+                            (component.ingredients || []).forEach(item => {
+                                // 嘗試排除明顯的空項目
+                                if (item.trim()) {
+                                    htmlContent += `<li>${item} <span class="text-gray-500 text-sm">(${component.name})</span></li>`;
+                                }
+                            });
+                        });
+                        
+                        htmlContent += `</ul>
+                    </div>`;
+                }
+
+                // 3. 渲染最終組裝步驟
+                htmlContent += `<div>
+                    <h4 class="text-2xl font-bold text-accent-gold mb-4 border-b-2 border-yellow-700 pb-2">🍸 最終組裝步驟 (調製飲品)</h4>
+                    <ol class="space-y-4 text-lg text-gray-300">`;
+                    (recipe.finalAssemblyInstructions || []).forEach((step, index) => {
+                        htmlContent += `<li class="p-3 bg-indigo-900 bg-opacity-30 rounded-lg border-l-4 border-accent-indigo">步驟 ${index + 1}. ${step}</li>`;
+                    });
+                htmlContent += `</ol>
+                </div>`;
+
+                // 注入新的結構到 UI
+                document.getElementById('recipeDetails').innerHTML = htmlContent;
+                document.getElementById('recipeDetails').classList.remove('hidden');
+
+            } catch (error) {
+                console.error('API 呼叫失敗:', error);
+                displayError(`無法生成飲品配方。錯誤訊息：${error.message}. 請檢查您的 API Key 是否正確。`);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // 頁面載入完成時確保初始化正確
+        document.addEventListener('DOMContentLoaded', () => {
+            toggleSpiritSelection(document.getElementById('baseDrink').value);
+        });
+    </script>
+</body>
+</html>
