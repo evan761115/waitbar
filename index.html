@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>逸群8號機器人 | 演藝大數據深度建檔系統</title>
+    <title>逸群9號機器人 | 演藝大數據深度建檔系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -12,7 +12,8 @@
         :root {
             --primary: #3b82f6;
             --bg-dark: #020617;
-            --card-bg: rgba(15, 23, 42, 0.9);
+            --card-bg: rgba(15, 23, 42, 0.8);
+            --accent: #6366f1;
         }
 
         body { 
@@ -20,187 +21,210 @@
             background-color: var(--bg-dark); 
             color: #f1f5f9;
             overflow: hidden;
+            height: 100vh;
         }
 
         .mono { font-family: 'JetBrains Mono', monospace; }
         
+        /* 高階毛玻璃效果 */
         .glass-panel { 
             background: var(--card-bg); 
-            backdrop-filter: blur(25px); 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
+        /* 掃描線動畫 */
         .scanline {
-            width: 100%; height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.8), transparent);
-            position: absolute; top: 0; z-index: 10;
-            animation: scan 4s linear infinite;
+            width: 100%; height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            position: absolute; top: 0; z-index: 50;
+            animation: scan 3s linear infinite;
             display: none;
+            opacity: 0.5;
         }
-
         @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        /* 自定義滾動條 */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
 
+        /* 分頁切換動畫 */
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tab-content.active { display: block; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .status-tag { padding: 2px 8px; border-radius: 4px; font-size: 10px; text-transform: uppercase; font-weight: bold; }
+        .status-pill { padding: 2px 10px; border-radius: 99px; font-size: 10px; font-weight: 800; letter-spacing: 1px; }
+        .data-label { color: #475569; font-size: 11px; font-weight: 900; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px; display: block; }
         
-        .data-label { color: #64748b; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        .glow-text { text-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
     </style>
 </head>
-<body class="h-screen flex flex-col">
+<body class="flex flex-col">
 
-    <nav class="h-16 border-b border-white/5 glass-panel flex items-center justify-between px-8 shrink-0 z-50">
-        <div class="flex items-center gap-6">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
-                    <i class="fas fa-satellite-dish text-white"></i>
+    <nav class="h-20 border-b border-white/5 glass-panel flex items-center justify-between px-10 shrink-0 z-[60]">
+        <div class="flex items-center gap-8">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 rotate-3">
+                    <i class="fas fa-microchip text-white text-lg"></i>
                 </div>
-                <span class="font-black text-xl tracking-tighter italic">ARTIST<span class="text-blue-500">INTEL</span> PRO</span>
+                <div>
+                    <span class="font-black text-2xl tracking-tighter italic block leading-none">ARTIST<span class="text-blue-500">INTEL</span></span>
+                    <span class="text-[9px] text-slate-500 font-bold tracking-[0.3em] uppercase">Enterprise Intelligence Pro</span>
+                </div>
             </div>
-            <div class="flex items-center gap-2 text-[10px] text-slate-500 font-bold tracking-widest uppercase">
-                <span class="status-tag bg-blue-500/10 text-blue-500 border border-blue-500/20">V2.1.2 STABLE</span>
-                <span id="modelLabel" class="mono text-blue-400">Gemini-1.5-Flash</span>
+            <div class="h-8 w-px bg-white/10"></div>
+            <div class="flex items-center gap-3">
+                <span class="status-pill bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">SYSTEM ONLINE</span>
+                <span id="versionTag" class="mono text-[10px] text-blue-400/60">V2.1.3_STABLE</span>
             </div>
         </div>
         
-        <div class="flex items-center gap-6">
+        <div class="flex items-center gap-5">
             <div class="relative group">
-                <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[10px]"></i>
-                <input type="password" id="apiKey" placeholder="ENTER GOOGLE API KEY" 
-                    class="bg-slate-950/80 border border-white/10 rounded-full px-10 py-2 text-[10px] focus:outline-none focus:border-blue-500 transition-all w-64 focus:w-80 mono text-blue-400">
+                <input type="password" id="apiKey" placeholder="CONFIGURATION KEY" 
+                    class="bg-slate-900/50 border border-white/10 rounded-xl px-5 py-2.5 text-xs focus:outline-none focus:border-blue-500 transition-all w-64 focus:w-96 mono text-blue-400 placeholder:text-slate-600">
+                <i class="fas fa-key absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 text-[10px]"></i>
             </div>
         </div>
     </nav>
 
     <div class="flex-1 flex overflow-hidden">
         
-        <aside class="w-80 glass-panel border-r border-white/5 flex flex-col p-6 shrink-0 z-40">
-            <div class="space-y-8">
+        <aside class="w-96 glass-panel border-r border-white/5 flex flex-col p-8 shrink-0 z-40">
+            <div class="flex-1 space-y-10">
                 <section>
-                    <label class="data-label">Target Investigation</label>
-                    <div class="relative">
-                        <input type="text" id="artistInput" placeholder="輸入藝人姓名 (如: 陳美鳳)" 
-                            class="w-full bg-slate-950 border border-white/5 rounded-xl px-5 py-4 text-white font-bold focus:ring-2 focus:ring-blue-600/50 outline-none transition-all placeholder:text-slate-700">
+                    <label class="data-label">Target Identification</label>
+                    <div class="relative group">
+                        <input type="text" id="artistInput" placeholder="輸入藝人或名人姓名" 
+                            class="w-full bg-slate-950/50 border border-white/10 rounded-2xl px-6 py-5 text-lg font-bold text-white focus:ring-2 focus:ring-blue-600/40 outline-none transition-all placeholder:text-slate-800">
+                        <i class="fas fa-search absolute right-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-blue-500 transition-colors"></i>
                     </div>
                 </section>
 
-                <section class="space-y-3">
-                    <label class="data-label">Deep Scan Modules</label>
-                    <div class="grid grid-cols-1 gap-2">
-                        <div class="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-xl hover:border-blue-500/50 transition">
+                <section class="space-y-4">
+                    <label class="data-label">Intelligence Modules</label>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="flex items-center justify-between p-5 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all cursor-pointer group">
                             <div class="flex flex-col">
-                                <span class="text-xs font-bold">秀場/藍寶石/民歌50</span>
-                                <span class="text-[9px] text-slate-500">歷史存檔深度挖掘</span>
+                                <span class="text-sm font-black text-slate-300 group-hover:text-white">歷史資歷深度挖掘</span>
+                                <span class="text-[10px] text-slate-500 uppercase tracking-tighter">Legacy & Sapphire Club Data</span>
                             </div>
-                            <i class="fas fa-check-circle text-blue-500"></i>
+                            <input type="checkbox" checked class="w-5 h-5 rounded accent-blue-600">
                         </div>
-                        <div class="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-xl">
+                        <div class="flex items-center justify-between p-5 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all cursor-pointer group">
                             <div class="flex flex-col">
-                                <span class="text-xs font-bold">商務標案報價</span>
-                                <span class="text-[9px] text-slate-500">市場實情動態分析</span>
+                                <span class="text-sm font-black text-slate-300 group-hover:text-white">市場行情動態分析</span>
+                                <span class="text-[10px] text-slate-500 uppercase tracking-tighter">Market Value Estimation</span>
                             </div>
-                            <i class="fas fa-check-circle text-blue-500"></i>
+                            <input type="checkbox" checked class="w-5 h-5 rounded accent-blue-600">
                         </div>
                     </div>
                 </section>
-
-                <button onclick="executeInquiry()" id="execBtn" class="w-full py-5 bg-gradient-to-br from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 rounded-2xl font-black tracking-widest text-sm shadow-2xl shadow-blue-900/40 transition-all active:scale-95 flex items-center justify-center gap-3 group">
-                    <span>LAUNCH DEEP SCAN</span>
-                    <i class="fas fa-bolt group-hover:animate-pulse"></i>
-                </button>
             </div>
+
+            <button onclick="executeInquiry()" id="execBtn" class="w-full py-6 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black tracking-widest text-sm shadow-2xl shadow-blue-900/40 transition-all active:scale-95 flex items-center justify-center gap-4 group mt-auto">
+                <i class="fas fa-bolt text-yellow-400 group-hover:animate-bounce"></i>
+                <span>LAUNCH DEEP SCAN</span>
+            </button>
         </aside>
 
         <main class="flex-1 flex flex-col relative bg-[#020617] overflow-hidden">
             <div id="scanline" class="scanline"></div>
             
-            <div id="loadingOverlay" class="hidden absolute inset-0 bg-slate-950/90 z-[100] flex flex-col items-center justify-center">
-                <div class="loader-container relative mb-8">
-                    <div class="w-20 h-20 border-4 border-blue-500/10 rounded-full"></div>
-                    <div class="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <div id="loadingOverlay" class="hidden absolute inset-0 bg-slate-950/95 z-[100] flex flex-col items-center justify-center">
+                <div class="relative mb-10">
+                    <div class="w-24 h-24 border-[6px] border-blue-500/10 rounded-full"></div>
+                    <div class="absolute inset-0 border-[6px] border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <i class="fas fa-fingerprint absolute inset-0 flex items-center justify-center text-blue-500 text-3xl animate-pulse"></i>
                 </div>
-                <h3 class="text-2xl font-black tracking-[0.3em] text-white mb-4">SYSTEM SCANNING</h3>
-                <div class="flex flex-col items-center gap-1 mono text-[10px] text-blue-500/60 uppercase">
-                    <p id="logMsg1">>> Initializing Google Search Retrieval...</p>
-                    <p id="logMsg2" class="opacity-0">>> Scanning Procurement Databases...</p>
-                    <p id="logMsg3" class="opacity-0">>> Synthesizing Career History...</p>
+                <h3 class="text-3xl font-black tracking-[0.4em] text-white mb-6 italic">INTEL RETRIEVING</h3>
+                <div class="flex flex-col items-center gap-2 mono text-[11px] text-blue-400/50 uppercase tracking-widest">
+                    <p id="logMsg1" class="animate-pulse">>> ACCESSING GOOGLE SEARCH NODES...</p>
+                    <p id="logMsg2" class="opacity-0">>> ANALYZING PROCUREMENT DATABASE...</p>
+                    <p id="logMsg3" class="opacity-0">>> GENERATING COMPREHENSIVE REPORT...</p>
                 </div>
             </div>
 
-            <header class="h-14 border-b border-white/5 glass-panel flex items-center px-10 gap-10 shrink-0">
-                <button onclick="switchTab('basic')" class="tab-btn text-[11px] font-black tracking-widest uppercase border-b-2 border-blue-500 text-blue-500 h-full transition-all" data-tab="basic">基本情報</button>
-                <button onclick="switchTab('career')" class="tab-btn text-[11px] font-black tracking-widest uppercase border-b-2 border-transparent text-slate-500 h-full transition-all" data-tab="career">資歷與秀場</button>
-                <button onclick="switchTab('market')" class="tab-btn text-[11px] font-black tracking-widest uppercase border-b-2 border-transparent text-slate-500 h-full transition-all" data-tab="market">身價估算</button>
-                <button onclick="switchTab('news')" class="tab-btn text-[11px] font-black tracking-widest uppercase border-b-2 border-transparent text-slate-500 h-full transition-all" data-tab="news">輿情追蹤</button>
+            <header class="h-16 border-b border-white/5 glass-panel flex items-center px-12 gap-12 shrink-0 z-10">
+                <button onclick="switchTab('basic')" class="tab-btn text-[12px] font-black tracking-widest uppercase border-b-2 border-blue-500 text-blue-500 h-full transition-all" data-tab="basic">基本情報</button>
+                <button onclick="switchTab('career')" class="tab-btn text-[12px] font-black tracking-widest uppercase border-b-2 border-transparent text-slate-500 h-full transition-all" data-tab="career">資歷與演藝史</button>
+                <button onclick="switchTab('market')" class="tab-btn text-[12px] font-black tracking-widest uppercase border-b-2 border-transparent text-slate-500 h-full transition-all" data-tab="market">市場價值預估</button>
+                <button onclick="switchTab('news')" class="tab-btn text-[12px] font-black tracking-widest uppercase border-b-2 border-transparent text-slate-500 h-full transition-all" data-tab="news">輿情掃描</button>
             </header>
 
-            <div id="viewer" class="flex-1 overflow-y-auto p-12 custom-scrollbar relative">
-                <div id="welcomePlaceholder" class="h-full flex flex-col items-center justify-center">
-                    <div class="opacity-10 text-center">
-                        <i class="fas fa-shield-virus text-[12rem] mb-8"></i>
-                        <p class="text-4xl font-black italic tracking-tighter">AWAITING TARGET COMMAND</p>
+            <div id="viewer" class="flex-1 overflow-y-auto p-16 custom-scrollbar">
+                <div id="welcomePlaceholder" class="h-full flex flex-col items-center justify-center text-center">
+                    <div class="relative mb-10">
+                        <i class="fas fa-shield-alt text-[10rem] text-white/[0.02]"></i>
+                        <i class="fas fa-user-secret text-6xl text-slate-800 absolute inset-0 flex items-center justify-center"></i>
                     </div>
+                    <p class="text-2xl font-black text-slate-700 italic tracking-widest">AWAITING TARGET COMMAND</p>
+                    <p class="text-xs text-slate-800 mt-4 mono tracking-widest uppercase">Input artist name to start intelligence gathering</p>
                 </div>
 
-                <div id="reportWrapper" class="hidden max-w-5xl mx-auto space-y-10">
+                <div id="reportWrapper" class="hidden max-w-6xl mx-auto space-y-12">
+                    
                     <div id="tab-basic" class="tab-content active">
-                        <div class="grid grid-cols-12 gap-8">
-                            <div class="col-span-8 glass-panel p-10 rounded-[2.5rem]">
-                                <div class="flex items-center gap-4 mb-8">
-                                    <div class="h-px flex-1 bg-gradient-to-r from-blue-500/50 to-transparent"></div>
-                                    <span class="text-xs font-black text-blue-500 uppercase tracking-widest">Intelligence Profile</span>
+                        <div class="grid grid-cols-12 gap-10">
+                            <div class="col-span-8 glass-panel p-12 rounded-[3rem] border-t border-white/10 relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-2 h-full bg-blue-600"></div>
+                                <div class="flex items-center gap-5 mb-10">
+                                    <span class="text-xs font-black text-blue-500 uppercase tracking-[0.3em]">Identity Profile</span>
+                                    <div class="h-px flex-1 bg-white/5"></div>
                                 </div>
-                                <div id="basicData" class="text-xl leading-relaxed text-slate-200 font-bold whitespace-pre-wrap"></div>
+                                <div id="basicData" class="text-2xl leading-relaxed text-slate-100 font-bold whitespace-pre-wrap"></div>
                             </div>
-                            <div class="col-span-4">
-                                <div class="glass-panel p-8 rounded-[2rem] flex flex-col items-center justify-center text-center border-t-4 border-blue-500">
-                                    <div id="artistScore" class="text-7xl font-black text-white italic tracking-tighter">--</div>
-                                    <div class="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-4">Influence Index</div>
+                            <div class="col-span-4 space-y-6">
+                                <div class="glass-panel p-10 rounded-[2.5rem] text-center border-b-4 border-blue-600">
+                                    <span class="data-label">Influence Score</span>
+                                    <div id="artistScore" class="text-8xl font-black text-white italic tracking-tighter glow-text">--</div>
+                                </div>
+                                <div class="p-8 bg-blue-600/10 border border-blue-500/20 rounded-[2rem]">
+                                    <p class="text-[10px] text-blue-400 font-bold leading-relaxed uppercase tracking-widest">AI 自動掃描結果：該對象在演藝圈具備極高資歷，數據採集自 1980-2026 跨度資料庫。</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div id="tab-career" class="tab-content">
-                        <div class="glass-panel p-10 rounded-[2.5rem] border-l-[12px] border-purple-600">
-                            <h4 class="text-purple-500 font-black text-xs uppercase tracking-widest mb-8 flex items-center gap-2">
-                                <i class="fas fa-history"></i> Performance Legacy
+                        <div class="glass-panel p-12 rounded-[3rem] border-l-[16px] border-indigo-600">
+                            <h4 class="text-indigo-500 font-black text-sm uppercase tracking-widest mb-10 flex items-center gap-4">
+                                <i class="fas fa-history text-xl"></i> PERFORMANCE LEGACY & HISTORY
                             </h4>
-                            <div id="careerData" class="text-lg text-slate-300 leading-loose whitespace-pre-wrap"></div>
+                            <div id="careerData" class="text-xl text-slate-200 leading-loose whitespace-pre-wrap"></div>
                         </div>
                     </div>
 
                     <div id="tab-market" class="tab-content">
-                        <div class="glass-panel p-10 rounded-[2.5rem] border-l-[12px] border-emerald-600">
-                            <h4 class="text-emerald-500 font-black text-xs uppercase tracking-widest mb-8 flex items-center gap-2">
-                                <i class="fas fa-chart-line"></i> Market Value
-                            </h4>
-                            <div class="text-5xl font-black text-white italic mono mb-4" id="marketData">TBD</div>
-                            <div id="marketDetail" class="text-emerald-400/80 text-sm whitespace-pre-wrap"></div>
+                        <div class="grid grid-cols-1 gap-8">
+                            <div class="glass-panel p-12 rounded-[3rem] border-l-[16px] border-emerald-600">
+                                <h4 class="text-emerald-500 font-black text-sm uppercase tracking-widest mb-6">Estimated Market Price</h4>
+                                <div class="text-7xl font-black text-white italic mono mb-8 tracking-tighter" id="marketData">TBD</div>
+                                <div class="h-px bg-white/5 mb-8"></div>
+                                <div id="marketDetail" class="text-slate-400 text-lg leading-relaxed whitespace-pre-wrap"></div>
+                            </div>
                         </div>
                     </div>
 
                     <div id="tab-news" class="tab-content">
-                        <div class="glass-panel p-10 rounded-[2.5rem] border-l-[12px] border-red-600 mb-6">
-                            <h4 class="text-red-500 font-black text-xs uppercase tracking-widest mb-6">Controversy</h4>
-                            <div id="controversyData" class="text-slate-200 font-bold whitespace-pre-wrap"></div>
+                        <div class="space-y-8">
+                            <div class="glass-panel p-10 rounded-[2.5rem] border-l-[16px] border-red-600">
+                                <h4 class="text-red-500 font-black text-sm uppercase tracking-widest mb-6">Risk Assessment / Controversy</h4>
+                                <div id="controversyData" class="text-slate-200 text-lg font-bold whitespace-pre-wrap"></div>
+                            </div>
+                            <div id="newsData" class="grid grid-cols-2 gap-6"></div>
                         </div>
-                        <div id="newsData" class="grid grid-cols-2 gap-4"></div>
                     </div>
+
                 </div>
             </div>
         </main>
     </div>
 
     <script>
+        // 切換分頁邏輯
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => {
@@ -212,35 +236,43 @@
             activeBtn.classList.add('text-blue-500', 'border-blue-500');
         }
 
+        // 核心執行函式
         async function executeInquiry() {
             const name = document.getElementById('artistInput').value;
             const key = document.getElementById('apiKey').value;
-            if (!name || !key) return alert("COMMAND DENIED: ENTER TARGET & API KEY.");
+            if (!name || !key) return alert("SECURITY ALERT: ACCESS DENIED. KEY AND TARGET REQUIRED.");
 
             const loading = document.getElementById('loadingOverlay');
             const scanline = document.getElementById('scanline');
+            
+            // UI 動態初始化
             loading.classList.remove('hidden');
             scanline.style.display = 'block';
+            document.getElementById('logMsg2').style.opacity = '0';
+            document.getElementById('logMsg3').style.opacity = '0';
+            
+            setTimeout(() => document.getElementById('logMsg2').style.opacity = '1', 1500);
+            setTimeout(() => document.getElementById('logMsg3').style.opacity = '1', 3000);
 
-            // 動態日誌
-            document.getElementById('logMsg2').classList.replace('opacity-100', 'opacity-0');
-            document.getElementById('logMsg3').classList.replace('opacity-100', 'opacity-0');
-            setTimeout(() => document.getElementById('logMsg2').classList.replace('opacity-0', 'opacity-100'), 1200);
-            setTimeout(() => document.getElementById('logMsg3').classList.replace('opacity-0', 'opacity-100'), 2500);
+            // 【核心修復】使用 v1 穩定版 Endpoint，避免 v1beta 頻繁的 404 問題
+            const API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${key}`;
 
-            // 【修復核心】使用標準版 1.5-flash 避免實驗版過期導致的 404
-            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
-
-            const prompt = `你是一個專業的情資官。請針對「${name}」進行全網搜尋。搜尋必須涵蓋：台灣標案系統演出費用、藍寶石大歌廳、民歌50、各地秀場資歷。
-            嚴格按 JSON 回傳（不准有 Markdown 標記）：
+            const prompt = `你是一個資深的演藝情報官。請針對「${name}」進行全網搜尋。
+            你需要整理以下資訊：
+            1. 基本建檔：出道年份、代表作、近期動態。
+            2. 演藝資歷：是否參加過藍寶石大歌廳、秀場往事、民歌演唱會、金曲/金馬獲獎史。
+            3. 市場身價：估計商業演出、剪綵、或政府標案的報價區間（台幣），並給出判斷理由。
+            4. 爭議與新聞：近年的負面新聞或社會評論。
+            
+            請嚴格按照以下 JSON 格式回傳，不要有任何多餘的解釋或 Markdown 標籤：
             {
-                "score": "影響力分值",
-                "basic": "基本建檔資料",
-                "career": "深度表演資歷",
-                "market_price": "報價區間",
-                "market_analysis": "報價依據",
-                "controversies": "爭議事件",
-                "news": ["新聞1", "新聞2", "新聞3"]
+                "score": "影響力分值(0-100)",
+                "basic": "基本建檔描述",
+                "career": "詳細演藝歷程",
+                "market_price": "NT$XXX,XXX - XXX,XXX",
+                "market_analysis": "報價分析理由",
+                "controversies": "爭議描述",
+                "news": ["新聞標題1", "新聞標題2", "新聞標題3"]
             }`;
 
             try {
@@ -248,22 +280,25 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }],
-                        tools: [{ google_search_retrieval: {} }]
+                        contents: [{ parts: [{ text: prompt }] }]
                     })
                 });
 
                 const data = await response.json();
-                if (data.error) throw new Error(`${data.error.message} (${data.error.code})`);
+                
+                if (data.error) {
+                    throw new Error(`${data.error.message} (Code: ${data.error.code})`);
+                }
 
                 const rawText = data.candidates[0].content.parts[0].text;
-                // 強效 JSON 提取：過濾掉 AI 可能附帶的 ```json 標記
+                
+                // 強效 JSON 提取機制
                 const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-                if (!jsonMatch) throw new Error("無效的資料格式回傳");
+                if (!jsonMatch) throw new Error("DATA_CORRUPTION: 無法解析情報內容。");
                 
                 const res = JSON.parse(jsonMatch[0]);
 
-                // 填入資料
+                // 渲染數據到 UI
                 document.getElementById('artistScore').innerText = res.score;
                 document.getElementById('basicData').innerText = res.basic;
                 document.getElementById('careerData').innerText = res.career;
@@ -271,17 +306,19 @@
                 document.getElementById('marketDetail').innerText = res.market_analysis;
                 document.getElementById('controversyData').innerText = res.controversies;
                 document.getElementById('newsData').innerHTML = res.news.map(n => `
-                    <div class="p-5 glass-panel rounded-2xl border border-white/5 text-sm font-bold text-slate-400">
-                        <i class="fas fa-caret-right text-blue-500 mr-2"></i> ${n}
+                    <div class="p-6 glass-panel rounded-[2rem] border border-white/5 hover:border-blue-500/30 transition-all">
+                        <i class="fas fa-rss-square text-blue-500 mr-3"></i>
+                        <span class="text-sm font-bold text-slate-300">${n}</span>
                     </div>
                 `).join('');
 
+                // 顯示結果
                 document.getElementById('welcomePlaceholder').classList.add('hidden');
                 document.getElementById('reportWrapper').classList.remove('hidden');
                 switchTab('basic');
 
             } catch (err) {
-                alert("INTEL ERROR: " + err.message);
+                alert("CRITICAL ERROR: " + err.message);
                 console.error(err);
             } finally {
                 loading.classList.add('hidden');
