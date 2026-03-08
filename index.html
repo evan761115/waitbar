@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>逸群機器人9號 | 演藝大數據深度建檔系統</title>
+    <title>逸群8號機器人 | 演藝大數據深度建檔系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -66,8 +66,8 @@
                 <span class="font-black text-xl tracking-tighter italic">ARTIST<span class="text-blue-500">INTEL</span> PRO</span>
             </div>
             <div class="flex items-center gap-2 text-[10px] text-slate-500 font-bold tracking-widest uppercase">
-                <span class="status-tag bg-blue-500/10 text-blue-500 border border-blue-500/20">V2.1.0 STABLE</span>
-                <span id="modelLabel" class="mono">Gemini-1.5-Flash-Exp</span>
+                <span class="status-tag bg-blue-500/10 text-blue-500 border border-blue-500/20">V2.1.2 STABLE</span>
+                <span id="modelLabel" class="mono text-blue-400">Gemini-1.5-Flash</span>
             </div>
         </div>
         
@@ -77,9 +77,6 @@
                 <input type="password" id="apiKey" placeholder="ENTER GOOGLE API KEY" 
                     class="bg-slate-950/80 border border-white/10 rounded-full px-10 py-2 text-[10px] focus:outline-none focus:border-blue-500 transition-all w-64 focus:w-80 mono text-blue-400">
             </div>
-            <button class="w-10 h-10 rounded-full bg-slate-800/50 flex items-center justify-center border border-white/5 hover:bg-slate-700 transition">
-                <i class="fas fa-user-shield text-xs text-slate-400"></i>
-            </button>
         </div>
     </nav>
 
@@ -119,14 +116,6 @@
                     <span>LAUNCH DEEP SCAN</span>
                     <i class="fas fa-bolt group-hover:animate-pulse"></i>
                 </button>
-            </div>
-
-            <div class="mt-auto space-y-4">
-                <div class="p-4 rounded-xl bg-blue-500/5 border border-blue-500/10">
-                    <p class="text-[10px] text-blue-400 leading-relaxed font-bold italic">
-                        "Your job is to make me the best version." - Gemini Partner Mode.
-                    </p>
-                </div>
             </div>
         </aside>
 
@@ -169,50 +158,42 @@
                                     <div class="h-px flex-1 bg-gradient-to-r from-blue-500/50 to-transparent"></div>
                                     <span class="text-xs font-black text-blue-500 uppercase tracking-widest">Intelligence Profile</span>
                                 </div>
-                                <div id="basicData" class="text-xl leading-relaxed text-slate-200 font-bold"></div>
+                                <div id="basicData" class="text-xl leading-relaxed text-slate-200 font-bold whitespace-pre-wrap"></div>
                             </div>
-                            <div class="col-span-4 space-y-8">
+                            <div class="col-span-4">
                                 <div class="glass-panel p-8 rounded-[2rem] flex flex-col items-center justify-center text-center border-t-4 border-blue-500">
                                     <div id="artistScore" class="text-7xl font-black text-white italic tracking-tighter">--</div>
                                     <div class="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-4">Influence Index</div>
                                 </div>
-                                <button onclick="window.print()" class="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest transition">
-                                    Export PDF Report
-                                </button>
                             </div>
                         </div>
                     </div>
 
                     <div id="tab-career" class="tab-content">
-                        <div class="glass-panel p-10 rounded-[2.5rem] border-l-[12px] border-purple-600 shadow-purple-900/10 shadow-2xl">
+                        <div class="glass-panel p-10 rounded-[2.5rem] border-l-[12px] border-purple-600">
                             <h4 class="text-purple-500 font-black text-xs uppercase tracking-widest mb-8 flex items-center gap-2">
-                                <i class="fas fa-history"></i> Performance Legacy & Venue Archive
+                                <i class="fas fa-history"></i> Performance Legacy
                             </h4>
-                            <div id="careerData" class="space-y-6 text-lg text-slate-300 leading-loose"></div>
+                            <div id="careerData" class="text-lg text-slate-300 leading-loose whitespace-pre-wrap"></div>
                         </div>
                     </div>
 
                     <div id="tab-market" class="tab-content">
                         <div class="glass-panel p-10 rounded-[2.5rem] border-l-[12px] border-emerald-600">
                             <h4 class="text-emerald-500 font-black text-xs uppercase tracking-widest mb-8 flex items-center gap-2">
-                                <i class="fas fa-chart-line"></i> Market Value & Procurement Analysis
+                                <i class="fas fa-chart-line"></i> Market Value
                             </h4>
-                            <div class="flex items-baseline gap-4 mb-6">
-                                <span class="text-5xl font-black text-white italic mono" id="marketData">TBD</span>
-                                <span class="text-slate-500 text-xs font-bold uppercase">Estimated Per Event</span>
-                            </div>
-                            <div id="marketDetail" class="p-6 bg-emerald-500/5 rounded-2xl text-emerald-400/80 text-sm font-medium italic border border-emerald-500/10"></div>
+                            <div class="text-5xl font-black text-white italic mono mb-4" id="marketData">TBD</div>
+                            <div id="marketDetail" class="text-emerald-400/80 text-sm whitespace-pre-wrap"></div>
                         </div>
                     </div>
 
                     <div id="tab-news" class="tab-content">
-                        <div class="space-y-8">
-                            <div class="glass-panel p-10 rounded-[2.5rem] border-l-[12px] border-red-600">
-                                <h4 class="text-red-500 font-black text-xs uppercase tracking-widest mb-6">Controversy Alert</h4>
-                                <div id="controversyData" class="text-slate-200 leading-relaxed font-bold"></div>
-                            </div>
-                            <div id="newsData" class="grid grid-cols-2 gap-4"></div>
+                        <div class="glass-panel p-10 rounded-[2.5rem] border-l-[12px] border-red-600 mb-6">
+                            <h4 class="text-red-500 font-black text-xs uppercase tracking-widest mb-6">Controversy</h4>
+                            <div id="controversyData" class="text-slate-200 font-bold whitespace-pre-wrap"></div>
                         </div>
+                        <div id="newsData" class="grid grid-cols-2 gap-4"></div>
                     </div>
                 </div>
             </div>
@@ -241,26 +222,25 @@
             loading.classList.remove('hidden');
             scanline.style.display = 'block';
 
-            // 動態日誌效果
-            setTimeout(() => document.getElementById('logMsg2').classList.replace('opacity-0', 'opacity-100'), 1500);
-            setTimeout(() => document.getElementById('logMsg3').classList.replace('opacity-0', 'opacity-100'), 3000);
+            // 動態日誌
+            document.getElementById('logMsg2').classList.replace('opacity-100', 'opacity-0');
+            document.getElementById('logMsg3').classList.replace('opacity-100', 'opacity-0');
+            setTimeout(() => document.getElementById('logMsg2').classList.replace('opacity-0', 'opacity-100'), 1200);
+            setTimeout(() => document.getElementById('logMsg3').classList.replace('opacity-0', 'opacity-100'), 2500);
 
-            // 修正後的路徑與模型名稱
-            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-exp:generateContent?key=${key}`;
+            // 【修復核心】使用標準版 1.5-flash 避免實驗版過期導致的 404
+            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
 
-            const prompt = `
-            你是一個專業的情資官。請針對「${name}」進行全網搜尋。
-            1. 搜尋必須涵蓋：台灣標案系統(如演出費用)、藍寶石大歌廳、民歌50、各地秀場資歷。
-            2. 語氣專業、數據導向。
-            3. 嚴格按 JSON 回傳（不可有 Markdown 標籤）：
+            const prompt = `你是一個專業的情資官。請針對「${name}」進行全網搜尋。搜尋必須涵蓋：台灣標案系統演出費用、藍寶石大歌廳、民歌50、各地秀場資歷。
+            嚴格按 JSON 回傳（不准有 Markdown 標記）：
             {
                 "score": "影響力分值",
-                "basic": "基本建檔資料(含現況)",
-                "career": "深度表演資歷(特別是秀場事實)",
+                "basic": "基本建檔資料",
+                "career": "深度表演資歷",
                 "market_price": "報價區間",
-                "market_analysis": "報價依據說明",
-                "controversies": "爭議或重大歷史事件",
-                "news": ["新聞標題1", "新聞標題2", "新聞標題3"]
+                "market_analysis": "報價依據",
+                "controversies": "爭議事件",
+                "news": ["新聞1", "新聞2", "新聞3"]
             }`;
 
             try {
@@ -274,13 +254,16 @@
                 });
 
                 const data = await response.json();
-                if (data.error) throw new Error(`${data.error.message} (Code: ${data.error.code})`);
+                if (data.error) throw new Error(`${data.error.message} (${data.error.code})`);
 
-                let text = data.candidates[0].content.parts[0].text;
-                // 強效清理 JSON，防止 Markdown 干擾
-                const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
-                const res = JSON.parse(cleanJson);
+                const rawText = data.candidates[0].content.parts[0].text;
+                // 強效 JSON 提取：過濾掉 AI 可能附帶的 ```json 標記
+                const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+                if (!jsonMatch) throw new Error("無效的資料格式回傳");
+                
+                const res = JSON.parse(jsonMatch[0]);
 
+                // 填入資料
                 document.getElementById('artistScore').innerText = res.score;
                 document.getElementById('basicData').innerText = res.basic;
                 document.getElementById('careerData').innerText = res.career;
@@ -288,7 +271,7 @@
                 document.getElementById('marketDetail').innerText = res.market_analysis;
                 document.getElementById('controversyData').innerText = res.controversies;
                 document.getElementById('newsData').innerHTML = res.news.map(n => `
-                    <div class="p-5 glass-panel rounded-2xl border border-white/5 text-sm font-bold text-slate-400 hover:text-white transition cursor-default">
+                    <div class="p-5 glass-panel rounded-2xl border border-white/5 text-sm font-bold text-slate-400">
                         <i class="fas fa-caret-right text-blue-500 mr-2"></i> ${n}
                     </div>
                 `).join('');
