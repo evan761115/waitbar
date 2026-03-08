@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARTIST INTEL PRO | 演藝大數據深度建檔系統</title>
+    <title>逸群9號機器人 | 演藝大數據深度建檔系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -12,7 +12,7 @@
         :root {
             --primary: #3b82f6;
             --bg-dark: #020617;
-            --card-bg: rgba(15, 23, 42, 0.85);
+            --card-bg: rgba(15, 23, 42, 0.9);
             --accent: #6366f1;
         }
 
@@ -26,6 +26,7 @@
 
         .mono { font-family: 'JetBrains Mono', monospace; }
         
+        /* 毛玻璃面板 */
         .glass-panel { 
             background: var(--card-bg); 
             backdrop-filter: blur(25px); 
@@ -33,6 +34,7 @@
             box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.6);
         }
 
+        /* 掃描線特效 */
         .scanline {
             width: 100%; height: 4px;
             background: linear-gradient(90deg, transparent, var(--primary), transparent);
@@ -44,23 +46,16 @@
         @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
 
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
         .status-pill { padding: 4px 12px; border-radius: 99px; font-size: 10px; font-weight: 900; letter-spacing: 1px; }
-        .data-label { color: #64748b; font-size: 11px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; display: block; }
-        
+        .data-label { color: #64748b; font-size: 11px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 12px; display: block; }
         .glow-text { text-shadow: 0 0 30px rgba(59, 130, 246, 0.6); }
-
-        /* 特殊按鈕動畫 */
-        .btn-glow:hover {
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
-            transform: translateY(-2px);
-        }
     </style>
 </head>
 <body class="flex flex-col">
@@ -73,13 +68,13 @@
                 </div>
                 <div>
                     <span class="font-black text-2xl tracking-tighter italic block leading-none">ARTIST<span class="text-blue-500">INTEL</span></span>
-                    <span class="text-[10px] text-slate-500 font-bold tracking-[0.4em] uppercase">Intelligence Node v2.1.4</span>
+                    <span class="text-[10px] text-slate-500 font-bold tracking-[0.4em] uppercase">Intelligence Node v2.1.5</span>
                 </div>
             </div>
             <div class="h-10 w-px bg-white/10"></div>
             <div class="flex items-center gap-4">
-                <span class="status-pill bg-blue-500/10 text-blue-400 border border-blue-500/20">STABLE CONNECT</span>
-                <span id="modelIndicator" class="mono text-[10px] text-slate-500">GEMINI_CORE_ENGINE</span>
+                <span class="status-pill bg-blue-500/10 text-blue-400 border border-blue-500/20">STABLE CORE</span>
+                <span id="modelIndicator" class="mono text-[10px] text-slate-500">ENGINE: GEMINI-1.5-FLASH</span>
             </div>
         </div>
         
@@ -97,9 +92,9 @@
         <aside class="w-96 glass-panel border-r border-white/10 flex flex-col p-8 shrink-0 z-40">
             <div class="flex-1 space-y-12">
                 <section>
-                    <label class="data-label">Subject Profiling</label>
+                    <label class="data-label">Target Profiling</label>
                     <div class="relative group">
-                        <input type="text" id="artistInput" placeholder="輸入搜尋對象 (如: 費玉清)" 
+                        <input type="text" id="artistInput" placeholder="輸入搜尋對象 (如: 陳美鳳)" 
                             class="w-full bg-slate-950/80 border border-white/10 rounded-2xl px-6 py-6 text-xl font-black text-white focus:ring-4 focus:ring-blue-600/20 outline-none transition-all placeholder:text-slate-800">
                     </div>
                 </section>
@@ -107,17 +102,17 @@
                 <section class="space-y-4">
                     <label class="data-label">Deep Analysis Modules</label>
                     <div class="grid grid-cols-1 gap-4">
-                        <div class="flex items-center justify-between p-6 bg-white/5 border border-white/5 rounded-3xl hover:bg-white/10 transition-all cursor-pointer group border-l-4 border-l-blue-500">
+                        <div class="flex items-center justify-between p-6 bg-white/5 border border-white/5 rounded-3xl group border-l-4 border-l-blue-500">
                             <div>
                                 <p class="text-sm font-black text-slate-200">演藝資歷深度掃描</p>
-                                <p class="text-[10px] text-slate-500 mt-1 uppercase">1980-2026 Archive Access</p>
+                                <p class="text-[10px] text-slate-500 mt-1 uppercase">1980-2026 History</p>
                             </div>
                             <i class="fas fa-check-circle text-blue-500"></i>
                         </div>
-                        <div class="flex items-center justify-between p-6 bg-white/5 border border-white/5 rounded-3xl hover:bg-white/10 transition-all cursor-pointer group border-l-4 border-l-emerald-500">
+                        <div class="flex items-center justify-between p-6 bg-white/5 border border-white/5 rounded-3xl group border-l-4 border-l-emerald-500">
                             <div>
-                                <p class="text-sm font-black text-slate-200">標案與商用價值分析</p>
-                                <p class="text-[10px] text-slate-500 mt-1 uppercase">Procurement Data Mesh</p>
+                                <p class="text-sm font-black text-slate-200">商用標案價值分析</p>
+                                <p class="text-[10px] text-slate-500 mt-1 uppercase">Price Estimation</p>
                             </div>
                             <i class="fas fa-check-circle text-emerald-500"></i>
                         </div>
@@ -125,9 +120,9 @@
                 </section>
             </div>
 
-            <button onclick="executeInquiry()" id="execBtn" class="btn-glow w-full py-7 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-[2rem] font-black tracking-[0.2em] text-sm shadow-2xl shadow-blue-900/40 transition-all active:scale-95 flex items-center justify-center gap-5 mt-auto">
-                <i class="fas fa-satellite-dish animate-bounce"></i>
-                <span>START SYSTEM SCAN</span>
+            <button onclick="executeInquiry()" id="execBtn" class="w-full py-7 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-[2rem] font-black tracking-[0.2em] text-sm shadow-2xl shadow-blue-900/40 transition-all active:scale-95 flex items-center justify-center gap-5 mt-auto">
+                <i class="fas fa-satellite-dish"></i>
+                <span>LAUNCH DEEP SCAN</span>
             </button>
         </aside>
 
@@ -142,26 +137,26 @@
                         <i class="fas fa-brain text-blue-500 text-4xl animate-pulse"></i>
                     </div>
                 </div>
-                <h3 class="text-4xl font-black tracking-[0.5em] text-white mb-8 italic glow-text">INTELLIGENCE SYNCING</h3>
+                <h3 class="text-4xl font-black tracking-[0.5em] text-white mb-8 italic glow-text uppercase">Data Syncing</h3>
                 <div class="flex flex-col items-center gap-3 mono text-xs text-blue-400/40 uppercase tracking-[0.3em]">
-                    <p id="logMsg1" class="animate-pulse">>> Requesting Neural Network Link...</p>
-                    <p id="logMsg2" class="opacity-0">>> Scouring Global Media Archives...</p>
-                    <p id="logMsg3" class="opacity-0">>> Finalizing Intelligence Packet...</p>
+                    <p id="logMsg1" class="animate-pulse">>> Requesting AI Node Link...</p>
+                    <p id="logMsg2" class="opacity-0">>> Scouring Global Archives...</p>
+                    <p id="logMsg3" class="opacity-0">>> Finalizing Report Packet...</p>
                 </div>
             </div>
 
             <header class="h-16 border-b border-white/10 glass-panel flex items-center px-16 gap-16 shrink-0 z-10">
                 <button onclick="switchTab('basic')" class="tab-btn text-xs font-black tracking-widest uppercase border-b-4 border-blue-500 text-blue-500 h-full transition-all" data-tab="basic">基本情報</button>
-                <button onclick="switchTab('career')" class="tab-btn text-xs font-black tracking-widest uppercase border-b-4 border-transparent text-slate-500 h-full transition-all" data-tab="career">演藝資歷庫</button>
+                <button onclick="switchTab('career')" class="tab-btn text-xs font-black tracking-widest uppercase border-b-4 border-transparent text-slate-500 h-full transition-all" data-tab="career">演藝資歷</button>
                 <button onclick="switchTab('market')" class="tab-btn text-xs font-black tracking-widest uppercase border-b-4 border-transparent text-slate-500 h-full transition-all" data-tab="market">身價分析</button>
                 <button onclick="switchTab('news')" class="tab-btn text-xs font-black tracking-widest uppercase border-b-4 border-transparent text-slate-500 h-full transition-all" data-tab="news">輿情爭議</button>
             </header>
 
             <div id="viewer" class="flex-1 overflow-y-auto p-20 custom-scrollbar">
                 <div id="welcomePlaceholder" class="h-full flex flex-col items-center justify-center">
-                    <div class="opacity-20 text-center">
+                    <div class="opacity-10 text-center">
                         <i class="fas fa-shield-virus text-[15rem] mb-12 text-slate-800"></i>
-                        <p class="text-5xl font-black italic tracking-tighter text-slate-700">AWAITING TARGET PROTOCOL</p>
+                        <p class="text-5xl font-black italic tracking-tighter text-slate-700">AWAITING SCAN COMMAND</p>
                     </div>
                 </div>
 
@@ -169,13 +164,13 @@
                     <div id="tab-basic" class="tab-content active">
                         <div class="grid grid-cols-12 gap-12">
                             <div class="col-span-8 glass-panel p-16 rounded-[4rem] border-r-8 border-r-blue-600">
-                                <span class="data-label text-blue-500">System profile output</span>
+                                <span class="data-label text-blue-500">System Identity Output</span>
                                 <div id="basicData" class="text-2xl leading-relaxed text-slate-100 font-bold whitespace-pre-wrap"></div>
                             </div>
                             <div class="col-span-4">
-                                <div class="glass-panel p-12 rounded-[3rem] text-center bg-gradient-to-b from-blue-600/10 to-transparent border-t-4 border-blue-500">
-                                    <span class="data-label">Impact Index</span>
-                                    <div id="artistScore" class="text-[10rem] font-black text-white italic tracking-tighter glow-text">--</div>
+                                <div class="glass-panel p-12 rounded-[3rem] text-center border-t-4 border-blue-500">
+                                    <span class="data-label">Impact Score</span>
+                                    <div id="artistScore" class="text-[9rem] font-black text-white italic tracking-tighter glow-text">--</div>
                                 </div>
                             </div>
                         </div>
@@ -184,27 +179,24 @@
                     <div id="tab-career" class="tab-content">
                         <div class="glass-panel p-16 rounded-[4rem] border-l-[20px] border-indigo-600">
                             <h4 class="text-indigo-400 font-black text-xs uppercase tracking-[0.5em] mb-12 flex items-center gap-4">
-                                <i class="fas fa-scroll-old text-2xl"></i> Legacy Archive Data
+                                <i class="fas fa-scroll-old text-2xl"></i> Performance History
                             </h4>
                             <div id="careerData" class="text-xl text-slate-300 leading-loose whitespace-pre-wrap"></div>
                         </div>
                     </div>
 
                     <div id="tab-market" class="tab-content">
-                        <div class="glass-panel p-16 rounded-[4rem] border-l-[20px] border-emerald-600 relative overflow-hidden">
-                            <div class="absolute top-0 right-0 p-10 opacity-10">
-                                <i class="fas fa-money-bill-trend-up text-[12rem]"></i>
-                            </div>
+                        <div class="glass-panel p-16 rounded-[4rem] border-l-[20px] border-emerald-600">
                             <h4 class="text-emerald-500 font-black text-xs uppercase tracking-widest mb-10">Market Valuation</h4>
                             <div class="text-8xl font-black text-white italic mono mb-10 tracking-tighter glow-text" id="marketData">TBD</div>
-                            <div id="marketDetail" class="text-slate-400 text-xl leading-relaxed whitespace-pre-wrap max-w-3xl"></div>
+                            <div id="marketDetail" class="text-slate-400 text-xl leading-relaxed whitespace-pre-wrap"></div>
                         </div>
                     </div>
 
                     <div id="tab-news" class="tab-content">
                         <div class="space-y-10">
                             <div class="glass-panel p-12 rounded-[3rem] border-l-[20px] border-red-600">
-                                <h4 class="text-red-500 font-black text-xs uppercase tracking-widest mb-8">Risk & Controversies</h4>
+                                <h4 class="text-red-500 font-black text-xs uppercase tracking-widest mb-8">Risk Scan</h4>
                                 <div id="controversyData" class="text-slate-200 text-xl font-bold whitespace-pre-wrap"></div>
                             </div>
                             <div id="newsData" class="grid grid-cols-2 gap-8"></div>
@@ -237,24 +229,20 @@
             loading.classList.remove('hidden');
             scanline.style.display = 'block';
 
-            // 動態 Log 特效
-            document.getElementById('logMsg2').classList.replace('opacity-100', 'opacity-0');
-            document.getElementById('logMsg3').classList.replace('opacity-100', 'opacity-0');
             setTimeout(() => document.getElementById('logMsg2').classList.replace('opacity-0', 'opacity-100'), 1500);
             setTimeout(() => document.getElementById('logMsg3').classList.replace('opacity-0', 'opacity-100'), 3200);
 
-            // 【終極解決 404 方案】
-            // 優先嘗試 v1beta，因為它支援工具調用最完整
-            // 如果報錯，請檢查 Key 是否在 Google Cloud 啟用了 Generative Language API
-            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+            // 【終極穩定的路徑】
+            // 優先使用 v1 (穩定版)，若報錯再降級嘗試，並確保模型名稱格式正確
+            const API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${key}`;
 
-            const prompt = `你是一個資深情報分析師。針對「${name}」產出全網深度建檔報告。內容必須包含：
-            1. 基本資料：出道背景、代表作。
-            2. 演藝資歷：藍寶石、歌廳秀、民歌時期、各大金獎資歷。
-            3. 市場身價：標案、商演、活動估計報價區間（台幣）。
-            4. 社會風險：近年負面新聞或爭議。
+            const prompt = `針對「${name}」進行深度演藝調查，內容包含：
+            1. 基本資料與出道作。
+            2. 演藝資歷（如：藍寶石歌廳秀、民歌大賽、三金獲獎）。
+            3. 市場身價（如：台幣標案、剪綵、商演估價）。
+            4. 輿情風險（近期新聞或爭議）。
             
-            回傳格式嚴格限制為 JSON (不准有 Markdown 標記):
+            回傳格式嚴格限制為 JSON (不包含 Markdown 標籤):
             {
                 "score": "影響力分數",
                 "basic": "基本建檔文字",
@@ -262,46 +250,42 @@
                 "market_price": "估價區間",
                 "market_analysis": "估價理由",
                 "controversies": "爭議描述",
-                "news": ["新聞標題1", "新聞標題2", "新聞標題3"]
+                "news": ["新聞1", "新聞2", "新聞3"]
             }`;
 
             try {
+                // 發起請求
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }],
-                        // 修正：某些 Key 沒權限開 search 會導致 404，如果以下失敗，可手動註解掉 tools
-                        tools: [{ google_search_retrieval: {} }]
+                        contents: [{ parts: [{ text: prompt }] }]
+                        // 移除 tools: google_search，這是 404 的主要來源
                     })
                 });
 
                 const data = await response.json();
                 
                 if (data.error) {
-                    // 如果是 404，給出極度明確的診斷建議
-                    if (data.error.code === 404) {
-                        throw new Error(`[CODE 404] 模型路徑無效。原因可能為：\n1. API Key 不支援 v1beta (請至 Google AI Studio 檢查)\n2. 您的專案尚未啟用 Search 工具權限。`);
-                    }
-                    throw new Error(data.error.message);
+                    throw new Error(`${data.error.message} (Code: ${data.error.code})`);
                 }
 
                 const rawText = data.candidates[0].content.parts[0].text;
                 const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-                if (!jsonMatch) throw new Error("JSON_PARSE_ERROR: 數據封包毀損。");
+                if (!jsonMatch) throw new Error("封包毀損，無法解析資料內容。");
                 
                 const res = JSON.parse(jsonMatch[0]);
 
-                // 渲染數據
-                document.getElementById('artistScore').innerText = res.score;
-                document.getElementById('basicData').innerText = res.basic;
-                document.getElementById('careerData').innerText = res.career;
-                document.getElementById('marketData').innerText = res.market_price;
-                document.getElementById('marketDetail').innerText = res.market_analysis;
-                document.getElementById('controversyData').innerText = res.controversies;
+                // 渲染 UI
+                document.getElementById('artistScore').innerText = res.score || "--";
+                document.getElementById('basicData').innerText = res.basic || "無資料";
+                document.getElementById('careerData').innerText = res.career || "無資料";
+                document.getElementById('marketData').innerText = res.market_price || "TBD";
+                document.getElementById('marketDetail').innerText = res.market_analysis || "";
+                document.getElementById('controversyData').innerText = res.controversies || "無顯著爭議";
                 document.getElementById('newsData').innerHTML = (res.news || []).map(n => `
-                    <div class="p-8 glass-panel rounded-[2rem] border border-white/10 hover:border-blue-500/50 transition-all group">
-                        <i class="fas fa-rss text-blue-500 mr-4 group-hover:animate-ping"></i>
+                    <div class="p-8 glass-panel rounded-[2.5rem] border border-white/10">
+                        <i class="fas fa-rss text-blue-500 mr-4"></i>
                         <span class="text-base font-bold text-slate-300">${n}</span>
                     </div>
                 `).join('');
@@ -311,8 +295,7 @@
                 switchTab('basic');
 
             } catch (err) {
-                alert("CRITICAL SYSTEM FAILURE:\n" + err.message);
-                console.error("DEBUG INFO:", err);
+                alert("CRITICAL ERROR:\n" + err.message + "\n\n請確保 Key 有啟用 Generative Language API。");
             } finally {
                 loading.classList.add('hidden');
                 scanline.style.display = 'none';
