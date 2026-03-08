@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>逸群機器人8號 | 演藝大數據深度建檔系統</title>
+    <title>逸群機器人9號 | 演藝大數據深度建檔系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -67,7 +67,7 @@
             </div>
             <div class="flex items-center gap-2 text-[10px] text-slate-500 font-bold tracking-widest uppercase">
                 <span class="status-tag bg-blue-500/10 text-blue-500 border border-blue-500/20">V2.1.0 STABLE</span>
-                <span id="modelLabel" class="mono">Gemini-2.0-Flash-Exp</span>
+                <span id="modelLabel" class="mono">Gemini-1.5-Flash-Exp</span>
             </div>
         </div>
         
@@ -246,7 +246,7 @@
             setTimeout(() => document.getElementById('logMsg3').classList.replace('opacity-0', 'opacity-100'), 3000);
 
             // 修正後的路徑與模型名稱
-            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${key}`;
+            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-exp:generateContent?key=${key}`;
 
             const prompt = `
             你是一個專業的情資官。請針對「${name}」進行全網搜尋。
