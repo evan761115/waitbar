@@ -3,134 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARTIST INTEL PRO | 深度情資終端</title>
+    <title>逸群 PRO | 深度終端 v2.1.7</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@300;400;700;900&display=swap');
-        
-        :root { --primary: #3b82f6; --bg-dark: #020617; --card-bg: rgba(15, 23, 42, 0.95); }
-        body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg-dark); color: #f1f5f9; height: 100vh; overflow: hidden; }
+        :root { --p: #3b82f6; --bg: #020617; }
+        body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: #f1f5f9; height: 100vh; overflow: hidden; }
         .mono { font-family: 'JetBrains Mono', monospace; }
-        .glass { background: var(--card-bg); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        
-        /* 核心掃描特效 */
-        .scanline {
-            width: 100%; height: 2px;
-            background: var(--primary);
-            position: absolute; top: 0; z-index: 100;
-            box-shadow: 0 0 15px var(--primary);
-            animation: scan 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-            display: none;
-        }
-        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
-
+        .glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+        .scanline { width: 100%; height: 2px; background: var(--p); position: absolute; z-index: 100; box-shadow: 0 0 15px var(--p); animation: scan 4s linear infinite; display: none; }
+        @keyframes scan { from { top: 0%; } to { top: 100%; } }
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.6s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        .glow-text { text-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body class="flex flex-col">
 
     <nav class="h-20 border-b border-white/10 glass flex items-center justify-between px-10 shrink-0 z-50">
         <div class="flex items-center gap-6">
-            <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 rotate-3">
-                <i class="fas fa-microchip text-white text-xl"></i>
-            </div>
+            <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center rotate-3"><i class="fas fa-terminal"></i></div>
             <div>
-                <span class="font-black text-2xl tracking-tighter italic block">ARTIST<span class="text-blue-500">INTEL</span> PRO</span>
-                <span class="text-[9px] text-slate-500 font-bold tracking-[0.4em] uppercase">V2.1.6 Hybrid Engine</span>
+                <span class="font-black text-2xl tracking-tighter italic">ARTIST<span class="text-blue-500">INTEL</span> PRO</span>
+                <span class="text-[9px] text-slate-500 font-bold tracking-[0.4em] block uppercase">Final Stability Node v2.1.7</span>
             </div>
         </div>
-        
-        <div class="flex items-center gap-6">
-            <div class="relative">
-                <input type="password" id="apiKey" placeholder="ENTER API KEY" 
-                    class="bg-slate-900/80 border border-white/10 rounded-xl px-10 py-2.5 text-xs focus:outline-none focus:border-blue-500 transition-all w-64 focus:w-96 mono text-blue-400">
-                <i class="fas fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 text-[10px]"></i>
-            </div>
+        <div class="relative">
+            <input type="password" id="apiKey" placeholder="AUTHENTICATION KEY" class="bg-slate-900 border border-white/10 rounded-xl px-10 py-2.5 text-xs w-80 mono text-blue-400 focus:outline-none">
+            <i class="fas fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-600"></i>
         </div>
     </nav>
 
     <div class="flex-1 flex overflow-hidden">
-        
-        <aside class="w-96 glass border-r border-white/5 flex flex-col p-8 shrink-0 z-40">
+        <aside class="w-96 glass border-r border-white/5 flex flex-col p-8 shrink-0">
             <div class="flex-1 space-y-10">
                 <section>
-                    <label class="text-[10px] font-black text-slate-500 tracking-widest uppercase mb-4 block">Target Intel</label>
-                    <input type="text" id="artistInput" placeholder="輸入藝人姓名" 
-                        class="w-full bg-slate-950/80 border border-white/10 rounded-2xl px-6 py-5 text-xl font-bold text-white focus:ring-2 focus:ring-blue-600/40 outline-none">
-                </section>
-
-                <section class="space-y-4">
-                    <label class="text-[10px] font-black text-slate-500 tracking-widest uppercase block">Investigation Protocol</label>
-                    <div class="p-5 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-between group cursor-pointer hover:bg-white/10 transition-all">
-                        <span class="text-sm font-bold text-slate-300">歷史秀場資歷挖掘</span>
-                        <i class="fas fa-check-circle text-blue-500"></i>
-                    </div>
-                    <div class="p-5 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-between group cursor-pointer hover:bg-white/10 transition-all">
-                        <span class="text-sm font-bold text-slate-300">標案報價動態分析</span>
-                        <i class="fas fa-check-circle text-emerald-500"></i>
-                    </div>
+                    <label class="text-[10px] font-black text-slate-500 tracking-widest uppercase mb-4 block">Target Artist</label>
+                    <input type="text" id="artistInput" placeholder="例如：費玉清" class="w-full bg-slate-950 border border-white/10 rounded-2xl px-6 py-5 text-xl font-bold text-white focus:ring-2 focus:ring-blue-500 outline-none">
                 </section>
             </div>
-
-            <button onclick="executeInquiry()" class="w-full py-6 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black tracking-widest text-sm shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-4">
-                <i class="fas fa-bolt"></i> EXECUTE DEEP SCAN
+            <button onclick="executeInquiry()" class="w-full py-6 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black tracking-widest transition-all flex items-center justify-center gap-4 shadow-xl">
+                <i class="fas fa-search-plus"></i> START ANALYSIS
             </button>
         </aside>
 
-        <main class="flex-1 relative bg-[#010409] overflow-hidden flex flex-col">
+        <main class="flex-1 relative bg-[#010409] flex flex-col overflow-hidden">
             <div id="scanline" class="scanline"></div>
-            
-            <div id="loadingOverlay" class="hidden absolute inset-0 bg-slate-950/95 z-[100] flex flex-col items-center justify-center">
-                <div class="w-20 h-20 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mb-8"></div>
-                <h3 class="text-2xl font-black tracking-[0.4em] text-white animate-pulse">SYNCHRONIZING...</h3>
-                <p id="statusLog" class="mono text-[10px] text-blue-400/60 mt-4 uppercase tracking-widest">>> Attempting Secure Link...</p>
+            <div id="loading" class="hidden absolute inset-0 bg-slate-950/95 z-[100] flex flex-col items-center justify-center">
+                <div class="w-16 h-16 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mb-6"></div>
+                <div id="statusLog" class="mono text-[11px] text-blue-400 tracking-widest">CONNECTING TO GOOGLE AI...</div>
             </div>
 
-            <div class="h-14 border-b border-white/5 flex items-center px-10 gap-10 shrink-0 bg-slate-950/50">
-                <button onclick="switchTab('basic')" class="tab-btn text-[10px] font-black tracking-widest uppercase border-b-2 border-blue-500 text-blue-500 h-full" data-tab="basic">基本情報</button>
+            <div class="h-14 border-b border-white/5 flex items-center px-10 gap-10 bg-slate-950/50">
+                <button onclick="switchTab('basic')" class="tab-btn text-[10px] font-black tracking-widest uppercase border-b-2 border-blue-500 text-blue-500 h-full" data-tab="basic">基本資料</button>
                 <button onclick="switchTab('career')" class="tab-btn text-[10px] font-black tracking-widest uppercase border-b-2 border-transparent text-slate-500 h-full" data-tab="career">演藝資歷</button>
-                <button onclick="switchTab('market')" class="tab-btn text-[10px] font-black tracking-widest uppercase border-b-2 border-transparent text-slate-500 h-full" data-tab="market">身價預估</button>
             </div>
 
-            <div id="viewer" class="flex-1 overflow-y-auto p-16 custom-scroll">
-                <div id="welcome" class="h-full flex flex-col items-center justify-center opacity-20">
-                    <i class="fas fa-shield-alt text-[10rem] mb-6"></i>
-                    <p class="text-xl font-black italic tracking-widest uppercase">System Ready</p>
+            <div class="flex-1 overflow-y-auto p-16">
+                <div id="welcome" class="h-full flex flex-col items-center justify-center opacity-10">
+                    <i class="fas fa-database text-[12rem] mb-6"></i>
+                    <p class="text-2xl font-black">AWAITING SYSTEM DATA</p>
                 </div>
-
                 <div id="report" class="hidden space-y-10">
                     <div id="tab-basic" class="tab-content active">
-                        <div class="grid grid-cols-3 gap-8">
-                            <div class="col-span-2 glass p-10 rounded-3xl border-l-8 border-blue-600">
-                                <label class="text-[10px] font-black text-blue-500 mb-4 block uppercase tracking-widest">Identity Profile</label>
-                                <div id="basicData" class="text-xl font-bold leading-relaxed text-slate-100"></div>
-                            </div>
-                            <div class="glass p-10 rounded-3xl text-center flex flex-col justify-center">
-                                <label class="text-[10px] font-black text-slate-500 mb-2 block uppercase tracking-widest">Impact Score</label>
-                                <div id="artistScore" class="text-8xl font-black italic glow-text">--</div>
-                            </div>
+                        <div class="glass p-12 rounded-[3rem] border-l-8 border-blue-500">
+                            <h2 id="resTitle" class="text-4xl font-black mb-6 italic">分析報告</h2>
+                            <div id="basicData" class="text-xl leading-relaxed text-slate-300 font-medium"></div>
                         </div>
                     </div>
-
                     <div id="tab-career" class="tab-content">
-                        <div class="glass p-10 rounded-3xl border-l-8 border-indigo-600">
-                            <label class="text-[10px] font-black text-indigo-500 mb-6 block uppercase tracking-widest">Performance Archive</label>
+                        <div class="glass p-12 rounded-[3rem] border-l-8 border-indigo-500">
                             <div id="careerData" class="text-lg leading-loose text-slate-300 whitespace-pre-wrap"></div>
-                        </div>
-                    </div>
-
-                    <div id="tab-market" class="tab-content">
-                        <div class="glass p-10 rounded-3xl border-l-8 border-emerald-600">
-                            <label class="text-[10px] font-black text-emerald-500 mb-4 block uppercase tracking-widest">Market Valuation</label>
-                            <div id="marketData" class="text-6xl font-black mono text-white mb-6 tracking-tighter"></div>
-                            <div id="marketDetail" class="text-slate-400 leading-relaxed border-t border-white/5 pt-6"></div>
                         </div>
                     </div>
                 </div>
@@ -152,66 +96,56 @@
         async function executeInquiry() {
             const name = document.getElementById('artistInput').value;
             const key = document.getElementById('apiKey').value;
-            if(!name || !key) return alert("REQUIRED: Target & API Key.");
-
-            const loader = document.getElementById('loadingOverlay');
+            const loader = document.getElementById('loading');
             const log = document.getElementById('statusLog');
+            
+            if(!name || !key) return alert("請輸入藝人名稱與 API Key。");
+
             loader.classList.remove('hidden');
             document.getElementById('scanline').style.display = 'block';
 
-            // 核心連線策略：嘗試多個版本路徑
-            const endpoints = [
+            // 最終極的模型路徑清單 (排除所有 exp 字樣，因為 exp 通常被個人帳號鎖定)
+            const modelVariations = [
                 `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
-                `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${key}`
+                `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${key}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${key}`
             ];
 
-            const prompt = `你是一個資深演藝情報官。請調查「${name}」。
-            嚴格以 JSON 回傳（無 Markdown）：
-            {
-                "score": "分數",
-                "basic": "基本介紹",
-                "career": "資歷（含秀場、藍寶石、標案經驗）",
-                "market_price": "NT$區間",
-                "market_analysis": "報價分析"
-            }`;
+            const prompt = `請針對藝人「${name}」產出深度演藝情資，包含：出道歷程、秀場或代表作品。內容請儘量詳盡。`;
 
-            let success = false;
-            for (let url of endpoints) {
+            for (let url of modelVariations) {
                 try {
-                    log.innerText = `>> Attempting Node: ${url.includes('v1beta') ? 'BETA' : 'STABLE'}...`;
-                    const resp = await fetch(url, {
+                    log.innerText = `[RETRY] 正在嘗試連線節點...`;
+                    const response = await fetch(url, {
                         method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
                     });
                     
-                    const data = await resp.json();
-                    if(data.candidates) {
-                        render(data.candidates[0].content.parts[0].text);
-                        success = true;
-                        break; 
+                    const data = await response.json();
+                    
+                    if (data.candidates && data.candidates[0].content) {
+                        const content = data.candidates[0].content.parts[0].text;
+                        document.getElementById('basicData').innerText = content;
+                        document.getElementById('careerData').innerText = content; // 先填充相同內容
+                        document.getElementById('welcome').classList.add('hidden');
+                        document.getElementById('report').classList.remove('hidden');
+                        loader.classList.add('hidden');
+                        document.getElementById('scanline').style.display = 'none';
+                        return; // 成功即退出
+                    } else if (data.error) {
+                        console.warn(`節點失敗: ${url}`, data.error.message);
+                        if (data.error.code === 403) {
+                            alert("關鍵錯誤 (403): 你的 Key 沒有啟用 Generative Language API 權限，請去 Google AI Studio 檢查。");
+                            break;
+                        }
                     }
-                } catch(e) { console.error("Node failed, switching..."); }
+                } catch (e) { console.error("系統故障", e); }
             }
 
-            if(!success) alert("ALL NODES FAILED. 檢查 API KEY 是否過期或服務區限制。");
+            alert("所有連線節點均失效 (404/403)。這通常意味著 API Key 已失效或該模型路徑對你的帳號不開放。");
             loader.classList.add('hidden');
             document.getElementById('scanline').style.display = 'none';
-        }
-
-        function render(raw) {
-            try {
-                const clean = raw.replace(/```json|```/g, "").trim();
-                const res = JSON.parse(clean);
-                document.getElementById('artistScore').innerText = res.score;
-                document.getElementById('basicData').innerText = res.basic;
-                document.getElementById('careerData').innerText = res.career;
-                document.getElementById('marketData').innerText = res.market_price;
-                document.getElementById('marketDetail').innerText = res.market_analysis;
-                document.getElementById('welcome').classList.add('hidden');
-                document.getElementById('report').classList.remove('hidden');
-                switchTab('basic');
-            } catch(e) { alert("DATA ERROR: 格式解析失敗。"); }
         }
     </script>
 </body>
