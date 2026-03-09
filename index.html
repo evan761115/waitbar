@@ -3,149 +3,351 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>逸群 PRO | 深度終端 v2.1.7</title>
+    <title>AI 藝人全方位調研系統 V2.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js" type="module"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@300;400;700;900&display=swap');
-        :root { --p: #3b82f6; --bg: #020617; }
-        body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: #f1f5f9; height: 100vh; overflow: hidden; }
-        .mono { font-family: 'JetBrains Mono', monospace; }
-        .glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
-        .scanline { width: 100%; height: 2px; background: var(--p); position: absolute; z-index: 100; box-shadow: 0 0 15px var(--p); animation: scan 4s linear infinite; display: none; }
-        @keyframes scan { from { top: 0%; } to { top: 100%; } }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap');
+        :root { --primary: #6366f1; --dark-bg: #0f172a; }
+        body { font-family: 'Inter', 'Noto Sans TC', sans-serif; background-color: var(--dark-bg); color: #f1f5f9; overflow-x: hidden; }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; }
+        .neon-glow { box-shadow: 0 0 20px rgba(99, 102, 241, 0.15); }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .loading-ring { border: 4px solid rgba(99, 102, 241, 0.1); border-top: 4px solid #6366f1; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .career-text { line-height: 1.8; letter-spacing: 0.025em; }
     </style>
 </head>
-<body class="flex flex-col">
+<body class="min-h-screen">
 
-    <nav class="h-20 border-b border-white/10 glass flex items-center justify-between px-10 shrink-0 z-50">
-        <div class="flex items-center gap-6">
-            <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center rotate-3"><i class="fas fa-terminal"></i></div>
-            <div>
-                <span class="font-black text-2xl tracking-tighter italic">ARTIST<span class="text-blue-500">INTEL</span> PRO</span>
-                <span class="text-[9px] text-slate-500 font-bold tracking-[0.4em] block uppercase">Final Stability Node v2.1.7</span>
+    <nav class="border-b border-white/10 sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-tr from-indigo-600 to-blue-500 rounded-xl flex items-center justify-center text-white font-black italic shadow-lg">AI</div>
+                <div>
+                    <h1 class="text-xl font-black tracking-tighter">藝人情資系統 <span class="text-indigo-400">V2.1</span></h1>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Celebrity Intel & Performance Database</p>
+                </div>
             </div>
-        </div>
-        <div class="relative">
-            <input type="password" id="apiKey" placeholder="AUTHENTICATION KEY" class="bg-slate-900 border border-white/10 rounded-xl px-10 py-2.5 text-xs w-80 mono text-blue-400 focus:outline-none">
-            <i class="fas fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-600"></i>
+            
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex flex-col items-end mr-2">
+                    <span id="modelStatus" class="text-[10px] font-bold text-slate-500 uppercase">未驗證</span>
+                    <select id="modelSelect" class="bg-transparent text-xs text-indigo-300 outline-none cursor-pointer">
+                        <option value="gemini-2.5-flash-preview-09-2025">預設模型 (2.5 Flash)</option>
+                    </select>
+                </div>
+                <input type="password" id="apiKey" class="w-48 bg-slate-900 border border-white/10 rounded-full px-4 py-2 text-xs focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="輸入 API KEY">
+                <button onclick="scanModels()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-full text-xs font-bold transition-all">驗證</button>
+            </div>
         </div>
     </nav>
 
-    <div class="flex-1 flex overflow-hidden">
-        <aside class="w-96 glass border-r border-white/5 flex flex-col p-8 shrink-0">
-            <div class="flex-1 space-y-10">
-                <section>
-                    <label class="text-[10px] font-black text-slate-500 tracking-widest uppercase mb-4 block">Target Artist</label>
-                    <input type="text" id="artistInput" placeholder="例如：費玉清" class="w-full bg-slate-950 border border-white/10 rounded-2xl px-6 py-5 text-xl font-bold text-white focus:ring-2 focus:ring-blue-500 outline-none">
-                </section>
-            </div>
-            <button onclick="executeInquiry()" class="w-full py-6 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black tracking-widest transition-all flex items-center justify-center gap-4 shadow-xl">
-                <i class="fas fa-search-plus"></i> START ANALYSIS
-            </button>
-        </aside>
-
-        <main class="flex-1 relative bg-[#010409] flex flex-col overflow-hidden">
-            <div id="scanline" class="scanline"></div>
-            <div id="loading" class="hidden absolute inset-0 bg-slate-950/95 z-[100] flex flex-col items-center justify-center">
-                <div class="w-16 h-16 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mb-6"></div>
-                <div id="statusLog" class="mono text-[11px] text-blue-400 tracking-widest">CONNECTING TO GOOGLE AI...</div>
+    <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- 左側：輸入區 -->
+        <div class="lg:col-span-4 space-y-6">
+            <div class="glass-panel p-6 neon-glow">
+                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-3">調查對象姓名</label>
+                <input type="text" id="celebName" class="w-full bg-slate-800 border border-white/5 rounded-xl p-4 text-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500 mb-4" placeholder="例如：胡瓜 / 蔡依林">
+                <button id="searchBtn" onclick="runResearch()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-xl font-black flex items-center justify-center gap-3 transition-all active:scale-95">
+                    <i class="fas fa-bolt"></i> 執行深度分析
+                </button>
+                <p class="text-[10px] text-slate-500 mt-4 text-center">系統將掃描：歌廳秀、民歌、北流、商演及近期動態</p>
             </div>
 
-            <div class="h-14 border-b border-white/5 flex items-center px-10 gap-10 bg-slate-950/50">
-                <button onclick="switchTab('basic')" class="tab-btn text-[10px] font-black tracking-widest uppercase border-b-2 border-blue-500 text-blue-500 h-full" data-tab="basic">基本資料</button>
-                <button onclick="switchTab('career')" class="tab-btn text-[10px] font-black tracking-widest uppercase border-b-2 border-transparent text-slate-500 h-full" data-tab="career">演藝資歷</button>
-            </div>
-
-            <div class="flex-1 overflow-y-auto p-16">
-                <div id="welcome" class="h-full flex flex-col items-center justify-center opacity-10">
-                    <i class="fas fa-database text-[12rem] mb-6"></i>
-                    <p class="text-2xl font-black">AWAITING SYSTEM DATA</p>
-                </div>
-                <div id="report" class="hidden space-y-10">
-                    <div id="tab-basic" class="tab-content active">
-                        <div class="glass p-12 rounded-[3rem] border-l-8 border-blue-500">
-                            <h2 id="resTitle" class="text-4xl font-black mb-6 italic">分析報告</h2>
-                            <div id="basicData" class="text-xl leading-relaxed text-slate-300 font-medium"></div>
-                        </div>
-                    </div>
-                    <div id="tab-career" class="tab-content">
-                        <div class="glass p-12 rounded-[3rem] border-l-8 border-indigo-500">
-                            <div id="careerData" class="text-lg leading-loose text-slate-300 whitespace-pre-wrap"></div>
-                        </div>
-                    </div>
+            <div class="glass-panel p-6">
+                <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">歷史雲端紀錄</h3>
+                <div id="historyList" class="space-y-2 max-h-[350px] overflow-y-auto pr-2 text-sm text-slate-500 italic">
+                    登入後即可同步紀錄...
                 </div>
             </div>
-        </main>
+        </div>
+
+        <!-- 右側：結果區 -->
+        <div class="lg:col-span-8 min-h-[700px] relative">
+            <div id="state-empty" class="glass-panel h-full flex flex-col items-center justify-center text-center p-10">
+                <div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mb-4 opacity-50">
+                    <i class="fas fa-database text-3xl"></i>
+                </div>
+                <h2 class="text-xl font-bold">尚未開始調研</h2>
+                <p class="text-slate-500 mt-2">請輸入藝人姓名並確保 API Key 已輸入</p>
+            </div>
+
+            <div id="state-loading" class="hidden glass-panel h-full flex flex-col items-center justify-center text-center">
+                <div class="loading-ring mb-4"></div>
+                <h2 class="text-xl font-bold animate-pulse">正在調研聯網資料...</h2>
+                <p class="text-slate-500 mt-2 text-sm">正在從 Google 搜尋獲取最新的新聞與表演資歷</p>
+                <div id="load-step" class="mt-4 px-4 py-1 bg-white/5 rounded-full text-[10px] uppercase font-mono text-indigo-400">Step: Initializing</div>
+            </div>
+
+            <div id="state-result" class="hidden space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 id="res-name" class="text-4xl font-black text-white">藝人名稱</h2>
+                        <div id="res-category" class="mt-2 inline-block px-3 py-1 bg-indigo-500/20 text-indigo-400 rounded-full text-xs font-bold uppercase">CATEGORY</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="saveToCloud()" id="btn-cloud" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition-all">
+                            <i class="fas fa-cloud-upload-alt"></i> 一鍵上傳雲端
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 數據看板 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="glass-panel p-5 bg-gradient-to-br from-slate-800/50 to-indigo-900/20 border-l-4 border-indigo-500">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">現齡 / 出生資訊</span>
+                        <div id="res-age" class="text-xl font-black mt-1">--</div>
+                    </div>
+                    <div class="glass-panel p-5 bg-gradient-to-br from-slate-800/50 to-emerald-900/20 border-l-4 border-emerald-500">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">預估演出價碼 (單場)</span>
+                        <div id="res-fee" class="text-xl font-black mt-1">--</div>
+                    </div>
+                    <div class="glass-panel p-5 bg-gradient-to-br from-slate-800/50 to-amber-900/20 border-l-4 border-amber-500">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">總演藝資歷</span>
+                        <div id="res-exp" class="text-xl font-black mt-1">--</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6">
+                    <!-- 表演資歷強化版 -->
+                    <div class="glass-panel p-6 border border-indigo-500/20">
+                        <h3 class="flex items-center gap-2 font-black text-indigo-400 mb-4 border-b border-white/5 pb-2 uppercase tracking-wider">
+                            <i class="fas fa-microphone-alt"></i> 大型演出、秀場經歷與演唱會
+                        </h3>
+                        <div id="res-career" class="career-text text-slate-200 leading-relaxed text-sm whitespace-pre-wrap"></div>
+                    </div>
+
+                    <!-- 新聞爭議區 -->
+                    <div class="glass-panel p-6 border border-rose-500/20">
+                        <h3 class="flex items-center gap-2 font-black text-rose-400 mb-4 border-b border-white/5 pb-2 uppercase tracking-wider">
+                            <i class="fas fa-newspaper"></i> 近期動態與歷史重大新聞爭議
+                        </h3>
+                        <div id="res-news" class="text-slate-300 leading-relaxed text-sm whitespace-pre-wrap"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast" class="fixed bottom-6 right-6 translate-y-20 opacity-0 bg-slate-800 text-white px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 z-[100] border border-white/10">
+        <span id="toast-msg">Message</span>
     </div>
 
-    <script>
-        function switchTab(t) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => {
-                b.classList.remove('text-blue-500', 'border-blue-500');
-                b.classList.add('text-slate-500', 'border-transparent');
-            });
-            document.getElementById('tab-'+t).classList.add('active');
-            document.querySelector(`[data-tab="${t}"]`).classList.add('text-blue-500', 'border-blue-500');
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, collection, query, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let db, auth, user, currentData = null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'celeb-intel-v2';
+
+        // 初始化 Firebase
+        try {
+            if (typeof __firebase_config !== 'undefined') {
+                const app = initializeApp(JSON.parse(__firebase_config));
+                auth = getAuth(app);
+                db = getFirestore(app);
+                signInAnonymously(auth).then(() => {
+                    onAuthStateChanged(auth, u => {
+                        user = u;
+                        if(user) loadHistory();
+                    });
+                });
+            }
+        } catch (e) { console.warn("Firebase config missing"); }
+
+        // 驗證模型
+        window.scanModels = async function() {
+            const key = document.getElementById('apiKey').value.trim();
+            if (!key) return showToast("請輸入 API Key");
+            
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+                const data = await res.json();
+                if (data.models) {
+                    const sel = document.getElementById('modelSelect');
+                    sel.innerHTML = '';
+                    data.models
+                        .filter(m => m.supportedGenerationMethods.includes('generateContent'))
+                        .forEach(m => {
+                            const name = m.name.replace('models/', '');
+                            sel.add(new Option(name, name));
+                        });
+                    document.getElementById('modelStatus').innerText = "驗證成功";
+                    document.getElementById('modelStatus').className = "text-[10px] font-bold text-emerald-400";
+                    showToast("模型清單已更新", "success");
+                } else {
+                    throw new Error("無效的回應");
+                }
+            } catch (e) {
+                showToast("API Key 驗證失敗");
+            }
         }
 
-        async function executeInquiry() {
-            const name = document.getElementById('artistInput').value;
-            const key = document.getElementById('apiKey').value;
-            const loader = document.getElementById('loading');
-            const log = document.getElementById('statusLog');
+        // 調研執行
+        window.runResearch = async function() {
+            const name = document.getElementById('celebName').value.trim();
+            const key = document.getElementById('apiKey').value.trim();
+            const model = document.getElementById('modelSelect').value;
+
+            if (!name) return showToast("請輸入姓名");
+            if (!key) return showToast("請輸入 API Key");
+
+            setUI('loading');
+            const step = document.getElementById('load-step');
             
-            if(!name || !key) return alert("請輸入藝人名稱與 API Key。");
-
-            loader.classList.remove('hidden');
-            document.getElementById('scanline').style.display = 'block';
-
-            // 最終極的模型路徑清單 (排除所有 exp 字樣，因為 exp 通常被個人帳號鎖定)
-            const modelVariations = [
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
-                `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${key}`,
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${key}`
-            ];
-
-            const prompt = `請針對藝人「${name}」產出深度演藝情資，包含：出道歷程、秀場或代表作品。內容請儘量詳盡。`;
-
-            for (let url of modelVariations) {
-                try {
-                    log.innerText = `[RETRY] 正在嘗試連線節點...`;
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.candidates && data.candidates[0].content) {
-                        const content = data.candidates[0].content.parts[0].text;
-                        document.getElementById('basicData').innerText = content;
-                        document.getElementById('careerData').innerText = content; // 先填充相同內容
-                        document.getElementById('welcome').classList.add('hidden');
-                        document.getElementById('report').classList.remove('hidden');
-                        loader.classList.add('hidden');
-                        document.getElementById('scanline').style.display = 'none';
-                        return; // 成功即退出
-                    } else if (data.error) {
-                        console.warn(`節點失敗: ${url}`, data.error.message);
-                        if (data.error.code === 403) {
-                            alert("關鍵錯誤 (403): 你的 Key 沒有啟用 Generative Language API 權限，請去 Google AI Studio 檢查。");
-                            break;
-                        }
-                    }
-                } catch (e) { console.error("系統故障", e); }
+            try {
+                step.innerText = "Step: 正在執行 Google 聯網深度檢索...";
+                const result = await fetchAI(key, model, name);
+                
+                if (result) {
+                    renderResult(result, name);
+                    currentData = result;
+                }
+            } catch (e) {
+                console.error(e);
+                showToast("發生錯誤：" + e.message);
+                setUI('empty');
             }
+        }
 
-            alert("所有連線節點均失效 (404/403)。這通常意味著 API Key 已失效或該模型路徑對你的帳號不開放。");
-            loader.classList.add('hidden');
-            document.getElementById('scanline').style.display = 'none';
+        async function fetchAI(key, model, name) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+            
+            // 強化的 Prompt，明確要求秀場與大型表演細節
+            const systemPrompt = `你是一個專業的演藝圈情資分析官。請針對「${name}」進行全方位的調查。
+            必須透過網路搜尋包含以下內容：
+            1. 基本資料：年齡、主攻領域。
+            2. 市場價值：單場演出價碼預估。
+            3. 表演資歷 (重點項目)：
+               - 早期秀場經歷：如高雄藍寶石、台北歌廳秀、鳳凰歌廳等。
+               - 大型拼盤與復刻秀：如「藍寶石大歌廳復刻版」、「民歌45/50」系列、各大拼盤演唱會。
+               - 個人/巡迴演唱會：地點(如北流、小巨蛋、國際會議中心TICC)及年份。
+               - 重大節慶表演：如金曲/金馬/金鐘獎表演、跨年大型表演。
+            4. 新聞與爭議：近期頭條、歷史上的重大負面事件或轉折。
+
+            請回傳 JSON 格式：
+            {
+              "age": "string",
+              "category": "string",
+              "experience_score": "string (描述資歷年數)",
+              "fee_estimate": "string (例如 台幣50-80萬)",
+              "career_detail": "以條列式詳細列出上述要求的演出與秀場資歷，需盡可能詳實且包含地點與年份",
+              "news_and_issues": "詳細列出近期新聞與歷史爭議事件"
+            }`;
+
+            const payload = {
+                contents: [{ parts: [{ text: systemPrompt }] }],
+                tools: [{ "google_search": {} }],
+                generationConfig: { 
+                    responseMimeType: "application/json",
+                    temperature: 0.1 // 降低溫度提高數據準確性
+                }
+            };
+
+            try {
+                // 指數退避重試邏輯 (Retry with Exponential Backoff)
+                const fetchWithRetry = async (payloadObj, retries = 0) => {
+                    const res = await fetch(url, { method: 'POST', body: JSON.stringify(payloadObj) });
+                    if (res.status === 429 && retries < 3) {
+                        await new Promise(r => setTimeout(r, Math.pow(2, retries) * 1000));
+                        return fetchWithRetry(payloadObj, retries + 1);
+                    }
+                    if (!res.ok) {
+                        // 如果是 Google Search 工具報錯，嘗試移除工具再試一次
+                        if (payloadObj.tools) {
+                            console.warn("Retrying without Google Search tool...");
+                            const fallbackPayload = { ...payloadObj };
+                            delete fallbackPayload.tools;
+                            return fetchWithRetry(fallbackPayload, 0);
+                        }
+                        throw new Error(`API Error: ${res.status}`);
+                    }
+                    return res.json();
+                };
+
+                const data = await fetchWithRetry(payload);
+                const rawText = data.candidates[0].content.parts[0].text;
+                const cleanJson = rawText.match(/\{[\s\S]*\}/)[0];
+                return JSON.parse(cleanJson);
+            } catch (e) {
+                throw new Error("分析失敗或解析錯誤，可能是 API Key 權限不足");
+            }
+        }
+
+        function renderResult(data, name) {
+            document.getElementById('res-name').innerText = name;
+            document.getElementById('res-category').innerText = data.category;
+            document.getElementById('res-age').innerText = data.age;
+            document.getElementById('res-fee').innerText = data.fee_estimate;
+            document.getElementById('res-exp').innerText = data.experience_score;
+            document.getElementById('res-career').innerText = data.career_detail;
+            document.getElementById('res-news').innerText = data.news_and_issues;
+            setUI('result');
+        }
+
+        // 雲端功能
+        window.saveToCloud = async function() {
+            if (!user) return showToast("正在初始化雲端...請稍後");
+            if (!currentData) return;
+
+            const btn = document.getElementById('btn-cloud');
+            btn.disabled = true;
+            btn.innerText = "上傳中...";
+
+            try {
+                const name = document.getElementById('res-name').innerText;
+                const path = `artifacts/${appId}/users/${user.uid}/celeb_records`;
+                await setDoc(doc(collection(db, path), `${Date.now()}`), {
+                    name,
+                    data: currentData,
+                    timestamp: serverTimestamp()
+                });
+                showToast("一鍵上傳成功！", "success");
+            } catch (e) {
+                showToast("上傳失敗");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "一鍵上傳雲端";
+            }
+        }
+
+        function loadHistory() {
+            const path = `artifacts/${appId}/users/${user.uid}/celeb_records`;
+            onSnapshot(query(collection(db, path)), (snap) => {
+                const list = document.getElementById('historyList');
+                list.innerHTML = '';
+                if (snap.empty) { list.innerHTML = '尚無紀錄'; return; }
+                snap.docs.forEach(d => {
+                    const item = d.data();
+                    const div = document.createElement('div');
+                    div.className = "p-3 bg-white/5 border border-white/5 rounded-lg hover:bg-white/10 cursor-pointer transition-all mb-2";
+                    div.innerHTML = `<div class="font-bold text-indigo-300 text-sm">${item.name}</div><div class="text-[9px] text-slate-500">${new Date(item.timestamp?.seconds*1000).toLocaleString()}</div>`;
+                    div.onclick = () => renderResult(item.data, item.name);
+                    list.appendChild(div);
+                });
+            }, (err) => console.log("Listen error:", err));
+        }
+
+        // UI 輔助
+        function setUI(state) {
+            ['empty', 'loading', 'result'].forEach(s => {
+                document.getElementById(`state-${s}`).classList.add('hidden');
+            });
+            document.getElementById(`state-${state}`).classList.remove('hidden');
+        }
+
+        function showToast(msg, type = "error") {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            t.className = `fixed bottom-6 right-6 flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 z-[100] border ${type === 'success' ? 'bg-emerald-600 border-emerald-400' : 'bg-slate-800 border-white/10'}`;
+            t.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => { t.classList.add('translate-y-20', 'opacity-0'); }, 3000);
         }
     </script>
 </body>
